@@ -12,7 +12,7 @@ DBeaver: Uma ferramenta de administração de banco de dados que simplifica a cr
 ## Configuração e Uso
 Antes de executar a aplicação, certifique-se de que as seguintes dependências estão instaladas em seu ambiente:
 
-* Python (recomendado Python 3.x)
+* Python
 * SQLite3
 * DBeaver (opcional, mas altamente recomendado para administração do banco de dados)
 
