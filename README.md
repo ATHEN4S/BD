@@ -17,7 +17,6 @@ Antes de executar a aplicação, certifique-se de que as seguintes dependências
 * DBeaver (opcional, mas altamente recomendado para administração do banco de dados)
 
 ## Estrutura do Projeto
-main.py: O ponto de entrada da aplicação. Contém a lógica principal para interagir com o banco de dados.
-interface.py: Módulo que define as operações de banco de dados, como criar tabelas, inserir registros, atualizar registros e realizar consultas.
-bdinit.py: Script para criar o banco de dados e inserir dados iniciais, contém as definições das funções utilizadas para mexer nas tabelas do banco de dados.
-clientes.txt: Output das tabelas
+interface.py: O ponto de entrada da aplicação. Contém a lógica principal para interagir com o banco de dados. Define as operações de banco de dados, como criar tabelas, inserir registros, atualizar registros e realizar consultas.
+bdinit.py: Script para criar o banco de dados e inserir dados iniciais, contém as definições das funções utilizadas para mexer nas tabelas do banco de dados. 
+clientes.db: O Banco de Dados fictício.
