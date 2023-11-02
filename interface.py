@@ -1,6 +1,5 @@
 #from bdinit import create_table, inserir_cliente, alterar_cliente, pesquisar_nome, remover_cliente, listar_todos, exibir_um, conexao, login_cliente login_funcionario
 from bdinit import *
-
 #create_table()
 
 print("\n BOAS VINDAS A LOJA DE ROUPAS")
@@ -9,7 +8,7 @@ print("\n BOAS VINDAS A LOJA DE ROUPAS")
 # Login Funcionario sem cadastro pois a loja vai começar com pelo menos um gerente, e ele que vai cadastrando os funcionarios
 LOG = 0
 ID = 0
-opcao = int(input("\n 1.LOGIN\n 2.CADASTRO\n 3.VER ITENS\n  4. FECHAR \n Insira uma opção: "))
+opcao = int(input("\n 1.LOGIN\n 2.CADASTRO\n 3.VER ITENS\n 4. FECHAR \n Insira uma opção: "))
 while True:
     if (opcao == 1):
         # LOGINS SEPARADOS EM CLIENTE E FUNCIONARIOS
@@ -40,7 +39,7 @@ while True:
             if id_func != False:
                 print("\n Login do funcionario feito com sucesso \n")
                 LOG = 2
-                if check_info('cod_func', id_func, 'cod_func', 'gerente') != False: # não está dando certo aqui, sempre vai dar False
+                if check_info('cod_func', id_func, 'cod_func', 'gerente') != False:
                     LOG = 3
                     interface_gerente(id_func)
                 else:
@@ -83,29 +82,51 @@ while True:
         break
 
 if LOG == 1:
-    opcao = int(input("\n 1.PERFIL 2.VER ITENS\n 3.HISTÓRICO DE PEDIDOS\n  4. SAIR \n Insira uma opção: "))
+    opcao = int(input("\n 1.PERFIL 2.VER ITENS\n 3.HISTÓRICO DE PEDIDOS\n 4. CARRINHO \n 5. SAIR\n Insira uma opção: "))
     while True:
         if (opcao == 1):
             print("\n PERFIL \n")
             VALUES = [nome, user, senha, email, cpf, is_flamengo, is_op, is_souza]
             print(VALUES)
-            inserir_cliente(VALUES)
+            inserir_cliente(VALUES) # esse serve praq? jaq o cliente já está inserido
             print("Cliente cadastrado com sucesso")
+            # Aqui vai ter como mudar alguma informação do cliente ou remover cliente?
             opcao = 0
         elif (opcao == 2):
             print("\n ITENS DA LOJA: \n")
+            lista = listar_item()
+            while True:
+                for item in lista:
+                    print(item)
+                try:
+                    add_aocarrinho = int(input("\n Digite o ID(INTEIRO) do item que deseja adicionar ao carrinho: \n -----> "))
+                except ValueError:
+                    print("\n -----------ERRO: NÃO FOI DIGITADO UM NÚMERO INTEIRO----------\n ")
+                #if addao_carrinho not in (item_id) -> NÃO ADD ITEM AO CARRINHO
+                # print(" -------- CARRINHO DE COMPRAS ------------")
+                #carrinho = listar_carrinho()
+                ask = input("\nDigite se você deseja continuar (s/n):\n ----> ")
+                while ask != 's' and ask != 'n':
+                    ask = input("\nDigite se você deseja continuar (s/n):\n ----> ")
+                if ask == 'n':
+                    break
             continue
             
         elif (opcao == 3):
             print("\n HISTORICO DE PEDIDOS: \n")
             desconto()
             continue
-            
-
+        
         elif (opcao == 4):
+            interface_carrinho(ID)
+
+            continue
+
+        elif (opcao == 5):
             print("Obrigada por usar nosso sistema\n\n")
+            break
             
-        elif (opcao < 0) or (opcao > 7):
+        elif (opcao < 0) or (opcao > 5):
             print("Essa opcao não existe, selecione outra")
             opcao = 0
             continue

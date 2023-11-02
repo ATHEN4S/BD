@@ -1,4 +1,4 @@
-
+import random
 import sqlite3
 
 conexao = sqlite3.connect('clientes.db')
@@ -36,7 +36,6 @@ rua VarChar(50) NOT NULL,
 numero integer NOT NULL,
 CEP integer NOT NULL,
 
-
 clienteFK integer NOT NULL,
 FOREIGN KEY(clienteFK) REFERENCES cliente(cliente_id)
 ON DELETE SET NULL
@@ -63,7 +62,7 @@ ON DELETE SET NULL
 ON UPDATE CASCADE
 );
 
-CREATE TABLE itens_pedido(
+CREATE TABLE carrinho(
 pedido_id integer PRIMARY KEY NOT NULL,
 qtd_item integer NOT NULL,
 item_idFK integer NOT NULL,
@@ -73,10 +72,10 @@ ON UPDATE CASCADE
 );
 
 CREATE TABLE estoque(
-qtd_estoque integer NOT NULL DEFAULT 0
+qtd_estoque integer NOT NULL DEFAULT 0,
 
-item_id integer NOT NULL,
-FOREIGN KEY(itemFK) REFERENCES item(item_id)
+item_idFK integer NOT NULL,
+FOREIGN KEY(item_idFK) REFERENCES item(item_id)
 );
 
 CREATE TABLE funcionario(
@@ -119,7 +118,7 @@ VALUES(1758, '67.00', 'Mari', 'camisa', 'rosa'),
 (4567, '62.67', 'Mariliu', 'calça', 'roxo'),
 (2324, '69.67', 'Mariliu', 'calça', 'preto');
 
-INSERT INTO clientes(username, senha, nome, email, cpf, is_flamengo, is_op, is_souza)
+INSERT INTO cliente(username, senha, nome, email, cpf, is_flamengo, is_op, is_souza)
 VALUES('flam', 'mengão', 'Gabriel Barbosa', 'gabigol@fmail.com', '01210455122', 'False', 'True', 'True' ),
 ('luffy', 'amoonepiece', 'sanji', 'marry@fmail.com', '33218800099', 'True', 'True', 'False'),
 ('torta', 'pineapple', 'Pinkie Pie', 'PINKIE@fmail.com', '01210001122', 'True', 'False', 'False'),('amanhecer', '1senha23', 'Twilight', 'ponypony@fmail.com', '01238237890', 'False', 'False', 'True'),('Equestria', '123senha', 'Equestria', '4o4@fmail.com', '01234567890', 'True', 'True', 'True'),('maça', 'abc1232', 'Apple Jack', 'macieira@pmail.com', '22344566700', 'False', 'True', 'True'),('Spark', 'milan777', 'Rarity', 'brilho@pmail.com', '11122233344', 'False', 'False', 'False'),('Angel', 'iisenha6', 'Angela', 'anf@gmail.com', '01666237890', 'False', 'False', 'False'),('Gabriel', 'senha339', 'Cabri', 'leaf@fmail.com', '01010129277', 'False', 'False', 'False'),('amigue','senha332', 'Monica', 'sansao@fmail.com', '00003333222', 'False', 'True', 'True'),('bolinha1', 'rsenha331','Cebolinha', '5sorte@fmail.com', '01672929772', 'True', 'False', 'True'),('maga', 'senha330', 'Magali', 'kkkkk@gmail.com', '11119999222', 'False', 'False', 'False'),('cascadebala4', 'senha334', 'Cascao', 'oinc@fmail.com', '01018888292', 'True', 'False', 'True'),('len', 'senha221', 'Milena', 'natureza@fmail.com', '01013333666', 'True', 'True', 'True'),('fran', 'senha888', 'Franjinha', 'ciencia@fmail.com', '33334444551', 'True', 'True', 'False'),('Tom', '123senha', 'Timothy', 'ema@fmail.com', '01010129292', 'False', 'False', 'False'),('Jerry', 'ratinho123', 'Jeremias de Souza','jerro@fmail.com', '03168442024', 'True', 'True', 'True'),('RainbowDash', 'Imnotponny2', 'Anna Luiza de Albuquerque', 'aninhaalbuq@fmail.com', '00345162366', 'False', 'False', 'False'),('Vineo', 'thisisme123', 'Angelina Jullie', 'jullita2334@fmail.com', '11546325851', 'False', 'False', 'False');
@@ -165,19 +164,43 @@ def interface_gerente(info):
     print("Gerente")
     # Supervisiona Vendedores e Abastece estoque
     # Terá lista de vendedores(que ele supervisiona) em que ele pode acessar as vendas de cada um
-    print(info)
+    
 
 def interface_vendedor(info):
     print("Vendedor")
     # Vendas para efetivar
     # pode acessar suas prórias vendas (pedidos que efetivou)
-    print(info)
+    
+def interface_carrinho(ID):
+    print("\n\n---------------------- CARRINHO ----------------------\n")
+    carrinho_escolha = int(input("\n 1. Remover Item\n 2. Fechar Pedido\n 3. Ver Carrinho \n 4. Sair do Carrinho \n ---> Insira uma opção: "))
+    while carrinho_escolha != 4:
+        if carrinho_escolha == 1:
+            # LISTAR CARRINHO
+            # REMOVER ITEM
+            pass
+        elif carrinho_escolha == 2:
+            all_pedido_id = lista_pedidos()
+            new_pedido_id = random.randint(1000, 100000000) not in all_pedido_id # Gera um id para o pedido
+        elif carrinho_escolha == 3:
+            #listar_carrinho(ID)
+            pass
+        elif carrinho_escolha != 4:
+            print("\n ----- OPÇÃO INVÁLIDA, TENTE NOVAMENTE ------- \n")
+        carrinho_escolha = int(input("\n 1. Remover Item\n 2. Fechar Pedido\n 3. Ver Carrinho \n 4. Sair do Carrinho"))
+    print("\n --------- Saindo do Carrinho... ---------\n")
 
 def listar_item():
     pesquisar = f"SELECT categoria, cor, item_preco FROM item;"
     ponte.execute(pesquisar)
     pesquisa = ponte.fetchall()
     return(pesquisa)
+
+def lista_pedidos():
+    pesquisar = f"SELECT pedido_id FROM pedido;"
+    ponte.execute(pesquisar)
+    pesquisa = ponte.fetchall()
+    return(pesquisa[:][0])
 
 def desconto():
     descontar = "SELECT pedido.valor_total FROM pedido WHERE EXISTS ( SELECT is_flamengo, is_op, is_souza FROM cliente WHERE cliente.cliente_id == pedido.clienteFK AND is_flamengo == True OR is_op == True OR is_souza == True)"
