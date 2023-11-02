@@ -18,7 +18,6 @@ is_flamengo BOOL NOT NULL DEFAULT FALSE,
 is_op BOOL NOT NULL DEFAULT FALSE,
 is_souza BOOL NOT NULL DEFAULT FALSE,
 
-
 UNIQUE (cpf),
 UNIQUE (username),
 CONSTRAINT ck_nome CHECK (length(nome) < 50 and length(nome) >= 3 )
@@ -56,17 +55,28 @@ qtd_itens integer NOT NULL,
 valor_total float NOT NULL,
 pagamento VarChar(50) NOT NULL,
 status_pagamento VarChar(50) NOT NULL,
+status VarChar(50) NOT NULL,
+mes VarChar(3) NOT NULL,
 clienteFK integer NOT NULL,
+
 FOREIGN KEY(clienteFK) REFERENCES cliente(cliente_id)
 ON DELETE SET NULL
 ON UPDATE CASCADE
 );
 
 CREATE TABLE carrinho(
-pedido_id integer PRIMARY KEY NOT NULL,
 qtd_item integer NOT NULL,
 item_idFK integer NOT NULL,
+pedidoFK integer NOT NULL,
+clienteFK integer NOT NULL,
+
+FOREIGN KEY(pedidoFK) REFERENCES pedido(pedido_id)
+ON DELETE SET NULL
+ON UPDATE CASCADE,
 FOREIGN KEY(item_idFK) REFERENCES item(item_id)
+ON DELETE SET NULL
+ON UPDATE CASCADE,
+FOREIGN KEY(clienteFK) REFERENCES cliente(cliente_id)
 ON DELETE SET NULL
 ON UPDATE CASCADE
 );
@@ -83,33 +93,41 @@ cod_func integer PRIMARY KEY NOT NULL,
 nome VarChar(30) NOT NULL,
 senha VarChar(15) NOT NULL,
 email VarChar(50) NOT NULL,
-cpf VarChar(20) NOT NULL
-CONSTRAINT email CHECK (email LIKE '%_@_%._%')
+cpf VarChar(20) NOT NULL,
+CONSTRAINT email CHECK (email LIKE '%_@_%._%'),
 CONSTRAINT senha CHECK (length(senha) < 15 and length(senha) >= 3 )
 );
 
 CREATE TABLE vendedor(
-cod_func integer PRIMARY KEY NOT NULL,
 conf_venda VarChar(50) NOT NULL DEFAULT 0,
+funcFK integer NOT NULL,
 pedido_idFK integer NOT NULL,
-FOREIGN KEY(pedido_idFK) REFERENCES pedido(pedido_id)
-ON UPDATE CASCADE
+
+FOREIGN KEY(funcFK) REFERENCES funcionario(cod_func)
 ON DELETE SET NULL
+ON UPDATE CASCADE,
+FOREIGN KEY(pedido_idFK) REFERENCES pedido(pedido_id)
+ON DELETE SET NULL
+ON UPDATE CASCADE
 );
 
 CREATE TABLE gerente(
-cod_func PRIMARY KEY NOT NULL,
+chave integer PRIMARY KEY NOT NULL,
+funcFK integer NOT NULL,
 vendedorFK integer,
-FOREIGN KEY(vendedorFK) REFERENCES vendedor(cod_func)
-ON UPDATE CASCADE
+FOREIGN KEY(funcFK) REFERENCES funcionario(cod_func)
 ON DELETE SET NULL
+ON UPDATE CASCADE,
+FOREIGN KEY(vendedorFK) REFERENCES vendedor(cod_func)
+ON DELETE SET NULL
+ON UPDATE CASCADE
 );
 
 INSERT INTO funcionario(cod_func, nome, senha, email, cpf)
 VALUES(1, 'First', '123', 'super_gerente@hotmail.com', '00000000001');
-INSERT INTO gerente(cod_func, vendedorFK)
-VALUES(1, NULL)
-;
+INSERT INTO gerente(chave, funcFK, vendedorFK)
+VALUES(21, 1, 0);
+
 
 INSERT INTO item(item_id, item_preco, lugar_fabricacao, categoria, cor )
 VALUES(1758, '67.00', 'Mari', 'camisa', 'rosa'),
@@ -139,16 +157,6 @@ def login_cliente(user, senha):
     return False
 
 def check_info(col, info, col_return, table):
-    """
-    with conexao:
-        ponte = conexao.cursor()
-        checar = f"SELECT {col_return} FROM {table} WHERE ({col} == '{info}');"
-        ponte.execute(checar)
-        checar = ponte.fetchall()
-        if len(checar) != 0:
-            return checar # retorno: [(1,)], mas queria que retornasse só o 1
-        return False
-    """
     if type(info) == int:
         checar = f"SELECT {col_return} FROM {table} WHERE ({col} == {info});"
     else:

@@ -8,11 +8,12 @@ print("\n BOAS VINDAS A LOJA DE ROUPAS")
 # Login Funcionario sem cadastro pois a loja vai começar com pelo menos um gerente, e ele que vai cadastrando os funcionarios
 LOG = 0
 ID = 0
+tipo = 0
 opcao = int(input("\n 1.LOGIN\n 2.CADASTRO\n 3.VER ITENS\n 4. FECHAR \n Insira uma opção: "))
-while True:
+while opcao != 4 and tipo != 4:
     if (opcao == 1):
         # LOGINS SEPARADOS EM CLIENTE E FUNCIONARIOS
-        tipo = int(input("\n LOGIN: \n 1. Login como cliente\n 2. Login como funcionario"))
+        tipo = int(input("\n LOGIN: \n 1. Login como cliente\n 2. Login como funcionario \n 4. Sair"))
 
         if tipo == 1:
             #CLIENTE
@@ -25,10 +26,10 @@ while True:
                 ID = ID_cliente(user)
                 LOG = 1
                 # agora está logado -> pode fazer pedidos
-                opcao == 0
                 break
             else:
                 print("\n Informações incorretas \n")
+            
 
         elif tipo == 2:
             #FUNCIONARIO
@@ -48,9 +49,6 @@ while True:
                 print("\n Informações incorretas \n")
         else:
             print("Essa não é uma opcao válida. Tente novamente")
-            continue
-
-        opcao == 0
 
 
     elif(opcao == 2):
@@ -68,7 +66,6 @@ while True:
         print(VALUES)
         inserir_cliente(VALUES)
         print("Cliente cadastrado com sucesso\n")
-        opcao = 0
 
     elif(opcao == 3):
         #VER ITENS
@@ -78,19 +75,15 @@ while True:
             print(item)
     
         desconto()
-        opcao == 0
         break
 
+
+    
 if LOG == 1:
     opcao = int(input("\n 1.PERFIL 2.VER ITENS\n 3.HISTÓRICO DE PEDIDOS\n 4. CARRINHO \n 5. SAIR\n Insira uma opção: "))
     while True:
         if (opcao == 1):
             print("\n PERFIL \n")
-            VALUES = [nome, user, senha, email, cpf, is_flamengo, is_op, is_souza]
-            print(VALUES)
-            inserir_cliente(VALUES) # esse serve praq? jaq o cliente já está inserido
-            print("Cliente cadastrado com sucesso")
-            # Aqui vai ter como mudar alguma informação do cliente ou remover cliente?
             opcao = 0
         elif (opcao == 2):
             print("\n ITENS DA LOJA: \n")
@@ -128,9 +121,9 @@ if LOG == 1:
             
         elif (opcao < 0) or (opcao > 5):
             print("Essa opcao não existe, selecione outra")
-            opcao = 0
             continue
 
+        opcao = 0
 exit
 
 """
