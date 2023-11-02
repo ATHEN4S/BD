@@ -15,7 +15,7 @@ nome VarChar(50) NOT NULL,
 email VarChar(50) NOT NULL,
 cpf VarChar(20) NOT NULL,
 is_flamengo BOOL NOT NULL DEFAULT FALSE,
-is_OP BOOL NOT NULL DEFAULT FALSE,
+is_op BOOL NOT NULL DEFAULT FALSE,
 is_souza BOOL NOT NULL DEFAULT FALSE,
 
 
@@ -73,8 +73,10 @@ ON UPDATE CASCADE
 );
 
 CREATE TABLE estoque(
-item_id integer PRIMARY KEY NOT NULL,
 qtd_estoque integer NOT NULL DEFAULT 0
+
+item_id integer NOT NULL,
+FOREIGN KEY(itemFK) REFERENCES item(item_id)
 );
 
 CREATE TABLE funcionario(
@@ -109,6 +111,18 @@ VALUES(1, 'First', '123', 'super_gerente@hotmail.com', '00000000001');
 INSERT INTO gerente(cod_func, vendedorFK)
 VALUES(1, NULL)
 ;
+
+INSERT INTO item(item_id, item_preco, lugar_fabricacao, categoria, cor )
+VALUES(1758, '67.00', 'Mari', 'camisa', 'rosa'),
+(1478, '67.67', 'Mariliu', 'camisa', 'roxo'),
+(1798, '67.90', 'Muri', 'camisa', 'preta'),
+(4567, '62.67', 'Mariliu', 'calça', 'roxo'),
+(2324, '69.67', 'Mariliu', 'calça', 'preto');
+
+INSERT INTO clientes(username, senha, nome, email, cpf, is_flamengo, is_op, is_souza)
+VALUES('flam', 'mengão', 'Gabriel Barbosa', 'gabigol@fmail.com', '01210455122', 'False', 'True', 'True' ),
+('luffy', 'amoonepiece', 'sanji', 'marry@fmail.com', '33218800099', 'True', 'True', 'False'),
+('torta', 'pineapple', 'Pinkie Pie', 'PINKIE@fmail.com', '01210001122', 'True', 'False', 'False'),('amanhecer', '1senha23', 'Twilight', 'ponypony@fmail.com', '01238237890', 'False', 'False', 'True'),('Equestria', '123senha', 'Equestria', '4o4@fmail.com', '01234567890', 'True', 'True', 'True'),('maça', 'abc1232', 'Apple Jack', 'macieira@pmail.com', '22344566700', 'False', 'True', 'True'),('Spark', 'milan777', 'Rarity', 'brilho@pmail.com', '11122233344', 'False', 'False', 'False'),('Angel', 'iisenha6', 'Angela', 'anf@gmail.com', '01666237890', 'False', 'False', 'False'),('Gabriel', 'senha339', 'Cabri', 'leaf@fmail.com', '01010129277', 'False', 'False', 'False'),('amigue','senha332', 'Monica', 'sansao@fmail.com', '00003333222', 'False', 'True', 'True'),('bolinha1', 'rsenha331','Cebolinha', '5sorte@fmail.com', '01672929772', 'True', 'False', 'True'),('maga', 'senha330', 'Magali', 'kkkkk@gmail.com', '11119999222', 'False', 'False', 'False'),('cascadebala4', 'senha334', 'Cascao', 'oinc@fmail.com', '01018888292', 'True', 'False', 'True'),('len', 'senha221', 'Milena', 'natureza@fmail.com', '01013333666', 'True', 'True', 'True'),('fran', 'senha888', 'Franjinha', 'ciencia@fmail.com', '33334444551', 'True', 'True', 'False'),('Tom', '123senha', 'Timothy', 'ema@fmail.com', '01010129292', 'False', 'False', 'False'),('Jerry', 'ratinho123', 'Jeremias de Souza','jerro@fmail.com', '03168442024', 'True', 'True', 'True'),('RainbowDash', 'Imnotponny2', 'Anna Luiza de Albuquerque', 'aninhaalbuq@fmail.com', '00345162366', 'False', 'False', 'False'),('Vineo', 'thisisme123', 'Angelina Jullie', 'jullita2334@fmail.com', '11546325851', 'False', 'False', 'False');
 """
 # Falta criar os itens
         #ponte.execute(create)
@@ -121,8 +135,8 @@ def login_funcionario(email, senha):
     return False
 
 def login_cliente(user, senha):
-    if check_info('user', user, 'cliente_id','cliente') != False and check_info('senha', senha, 'cliente_id', 'cliente') != False:
-        return check_info('user', user, 'cliente_id','cliente')
+    if check_info('username', user, 'cliente_id','cliente') != False and check_info('senha', senha, 'cliente_id', 'cliente') != False:
+        return check_info('username', user, 'cliente_id','cliente')
     return False
 
 def check_info(col, info, col_return, table):
@@ -136,17 +150,15 @@ def check_info(col, info, col_return, table):
             return checar # retorno: [(1,)], mas queria que retornasse só o 1
         return False
     """
-    with conexao:
-        ponte = conexao.cursor()
-        if type(info) == int:
-            checar = f"SELECT {col_return} FROM {table} WHERE ({col} == {info});"
-        else:
-            checar = f"SELECT {col_return} FROM {table} WHERE ({col} == '{info}');"
-        ponte.execute(checar)
-        checar = ponte.fetchall()
-        if len(checar) != 0:
-            return checar[0][0]
-        return False
+    if type(info) == int:
+        checar = f"SELECT {col_return} FROM {table} WHERE ({col} == {info});"
+    else:
+        checar = f"SELECT {col_return} FROM {table} WHERE ({col} == '{info}');"
+    ponte.execute(checar)
+    checar = ponte.fetchall()
+    if len(checar) != 0:
+        return checar[0][0]
+    return False
 
         
 def interface_gerente(info):
@@ -161,51 +173,68 @@ def interface_vendedor(info):
     # pode acessar suas prórias vendas (pedidos que efetivou)
     print(info)
 
+def listar_item():
+    pesquisar = f"SELECT categoria, cor, item_preco FROM item;"
+    ponte.execute(pesquisar)
+    pesquisa = ponte.fetchall()
+    return(pesquisa)
+
+def desconto():
+    descontar = "SELECT pedido.valor_total FROM pedido WHERE EXISTS ( SELECT is_flamengo, is_op, is_souza FROM cliente WHERE cliente.cliente_id == pedido.clienteFK AND is_flamengo == True OR is_op == True OR is_souza == True)"
+    ponte.execute(descontar)
+    print("Desconto")
+    descontostotais = ponte.fetchall()
+    print(descontostotais)
+    conexao.commit()
+
 def inserir_cliente(info):
-    with conexao:
-        ponte = conexao.cursor()
+    inserir = "INSERT INTO cliente(nome, username, senha, email, cpf, is_flamengo, is_op, is_souza) VALUES(?,?,?,?,?,?,?,?)"
+    ponte.execute(inserir, info)
+    conexao.commit()
 
-        inserir = "INSERT INTO cliente(nome, username, senha, email, cpf, is_flamengo, is_OP, is_souza) VALUES(?,?,?,?,?,?,?,?)"
-        ponte.execute(inserir, info)
-        conexao.commit()
+def inserir_item(info):
+    inserir = "INSERT INTO item (item_id, item_preco, lugar_fabricacao, categoria, cor) VALUES(?,?,?,?,?,?,?,?)"
+    ponte.execute(inserir, info)
+    conexao.commit()
 
+def alterar_item(coluna, novo, chave):
+    alterar = f"UPDATE item SET {coluna} = '{novo}' WHERE (item_id == '{chave}');"
+    ponte.execute(alterar)
+    conexao.commit()
 
 def alterar_cliente(coluna, novo, chave):
-    with conexao:
-        ponte = conexao.cursor()
-        alterar = f"UPDATE cliente SET {coluna} = '{novo}' WHERE (username == '{chave}');"
-        ponte.execute(alterar)
-        conexao.commit()
+    alterar = f"UPDATE cliente SET {coluna} = '{novo}' WHERE (username == '{chave}');"
+    ponte.execute(alterar)
+    conexao.commit()
 
 def pesquisar_nome(chave):
-    with conexao:
-        ponte = conexao.cursor()
-        pesquisar = f"SELECT * FROM cliente WHERE (nome LIKE '{chave}');"
-        ponte.execute(pesquisar)
-        pesquisa = ponte.fetchall()
-        print(pesquisa)
-        return(pesquisa)
+    pesquisar = f"SELECT * FROM cliente WHERE (nome LIKE '{chave}');"
+    ponte.execute(pesquisar)
+    pesquisa = ponte.fetchall()
+    print(pesquisa)
+    return(pesquisa)
 
 def remover_cliente(info):
-    with conexao:
-        ponte = conexao.cursor()
-        deletar = f"DELETE FROM cliente WHERE (username = '{info}');"
-        ponte.execute(deletar)
-        conexao.commit()
+    deletar = f"DELETE FROM cliente WHERE (username = '{info}');"
+    ponte.execute(deletar)
+    conexao.commit()
 
 def listar_todos():
-    with conexao:
-        ponte = conexao.cursor()
-        pesquisar = f"SELECT * FROM cliente;"
-        ponte.execute(pesquisar)
-        pesquisa = ponte.fetchall()
-        return(pesquisa)
-    
+    pesquisar = f"SELECT * FROM cliente;"
+    ponte.execute(pesquisar)
+    pesquisa = ponte.fetchall()
+    return(pesquisa)
+
+def ID_cliente(chave):
+    pesquisar = f"SELECT cliente_id FROM cliente WHERE (username == '{chave}');"
+    ponte.execute(pesquisar)
+    pesquisa = ponte.fetchone()
+    print(pesquisa)
+    return(pesquisa)
+
 def exibir_um(chave):
-    with conexao:
-        ponte = conexao.cursor()
-        pesquisar = f"SELECT * FROM cliente WHERE (username == '{chave}');"
-        ponte.execute(pesquisar)
-        pesquisa = ponte.fetchall()
-        print(pesquisa)
-        return(pesquisa)
+    pesquisar = f"SELECT * FROM cliente WHERE (username == '{chave}');"
+    ponte.execute(pesquisar)
+    pesquisa = ponte.fetchall()
+    print(pesquisa)
+    return(pesquisa)
