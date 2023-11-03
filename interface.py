@@ -1,6 +1,6 @@
 #from bdinit import create_table, inserir_cliente, alterar_cliente, pesquisar_nome, remover_cliente, listar_todos, exibir_um, conexao, login_cliente login_funcionario
 from bdinit import *
-#create_table()
+create_table()
 
 print("\n BOAS VINDAS A LOJA DE ROUPAS")
 
@@ -97,8 +97,10 @@ while opcao != 4 and tipo != 4:
         for item in lista:
             cont += 1
             print(cont,". ",item)
-
-        break
+            
+        input("Digite qualquer coisa para prosseguir.\n >")
+        opcao = 0
+        continue
 
 
 #INTERFACE CLIENTES
@@ -228,6 +230,7 @@ if LOG == 3:
         elif (opcao < 0) or (opcao > 5):
             print("\nEssa opcao não existe, selecione outra\n")
             continue
+
 
 
 
