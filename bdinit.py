@@ -1,7 +1,7 @@
 import random
 import sqlite3
 
-conexao = sqlite3.connect("clientes.db")
+conexao = sqlite3.connect("ver2\clientes.db")
 ponte = conexao.cursor()
 
 def create_table():
@@ -15,7 +15,6 @@ cpf VarChar(20) NOT NULL,
 is_flamengo BOOL NOT NULL DEFAULT FALSE,
 is_op BOOL NOT NULL DEFAULT FALSE,
 is_souza BOOL NOT NULL DEFAULT FALSE,
-
 UNIQUE (cpf),
 UNIQUE (username),
 CONSTRAINT ck_nome CHECK (length(nome) < 50 and length(nome) >= 3 )
@@ -31,7 +30,6 @@ estado VarChar(50) NOT NULL,
 rua VarChar(50) NOT NULL,
 numero integer NOT NULL,
 CEP integer NOT NULL,
-
 clienteFK integer NOT NULL,
 FOREIGN KEY(clienteFK) REFERENCES cliente(cliente_id)
 ON DELETE SET NULL
@@ -40,7 +38,8 @@ ON UPDATE CASCADE
 
 CREATE TABLE IF NOT EXISTS item(
 item_id integer PRIMARY KEY NOT NULL,
-item_preco float NOT NULL,
+item_nome VarChar(50) NOT NULL,
+preco float NOT NULL,
 lugar_fabricacao VarChar(50) NOT NULL,
 categoria VarChar(50) NOT NULL,
 cor VarChar(50) NOT NULL
@@ -55,7 +54,6 @@ status_pagamento VarChar(50) NOT NULL,
 status VarChar(50) NOT NULL,
 mes VarChar(3) NOT NULL,
 clienteFK integer NOT NULL,
-
 FOREIGN KEY(clienteFK) REFERENCES cliente(cliente_id)
 ON DELETE SET NULL
 ON UPDATE CASCADE
@@ -66,7 +64,6 @@ qtd_item integer NOT NULL,
 item_idFK integer NOT NULL,
 pedidoFK integer NOT NULL DEFAULT "Pedido não feito",
 clienteFK integer NOT NULL,
-
 FOREIGN KEY(pedidoFK) REFERENCES pedido(pedido_id)
 ON DELETE SET NULL
 ON UPDATE CASCADE,
@@ -80,7 +77,6 @@ ON UPDATE CASCADE
 
 CREATE TABLE IF NOT EXISTS estoque(
 qtd_estoque integer NOT NULL DEFAULT 0,
-
 item_idFK integer NOT NULL,
 FOREIGN KEY(item_idFK) REFERENCES item(item_id)
 );
@@ -99,7 +95,6 @@ CREATE TABLE IF NOT EXISTS vendedor(
 conf_venda VarChar(50) NOT NULL DEFAULT 0,
 funcFK integer NOT NULL,
 pedido_idFK integer NOT NULL,
-
 FOREIGN KEY(funcFK) REFERENCES funcionario(cod_func)
 ON DELETE SET NULL
 ON UPDATE CASCADE,
@@ -126,12 +121,26 @@ INSERT OR IGNORE INTO gerente(chave, funcFK, vendedorFK)
 VALUES(21, 1, 0);
 
 
-INSERT OR IGNORE INTO item(item_id, item_preco, lugar_fabricacao, categoria, cor )
-VALUES(1758, '67.00', 'Mari', 'camisa', 'rosa'),
-(1478, '67.67', 'Mariliu', 'camisa', 'roxo'),
-(1798, '67.90', 'Muri', 'camisa', 'preta'),
-(4567, '62.67', 'Mariliu', 'calça', 'roxo'),
-(2324, '69.67', 'Mariliu', 'calça', 'preto');
+INSERT OR IGNORE INTO item(item_id, item_nome, preco, lugar_fabricacao, categoria, cor )
+VALUES(1758, 'Camisa Twilight', '67.00', 'Mari', 'camisa', 'rosa'),
+(1479, 'Camisa Sparky', '67.67', 'Lalaland', 'camisa', 'roxo'),
+(1378, 'Camisa Luffy', '53.99', 'Mari', 'camisa', 'vermelho'),
+(1798, 'Camisa Morgana', '67.90', 'Mari', 'camisa', 'preto'),
+(1712, 'Camisa Grifinoria', '93.40', 'Hogwarts', 'camisa', 'vermelha'),
+(1713, 'Camisa Lufalufa', '93.40', 'Hogwarts', 'camisa', 'amarela'),
+(1714, 'Camisa Sonserina','93.40', 'Hogwarts', 'camisa', 'verde'),
+(1715, 'Camisa Corvinal','93.40', 'Hogwarts', 'camisa', 'azul'),
+(1211, 'Camisa Caldas','89.90', 'Caldas Novas', 'camisa', 'branco'),
+(1755, 'Camisa Contra o Sol','55.90', 'Patos de Minas', 'camisa', 'preto'),
+(2567, 'Calça Twilight','53.99', 'Diadema', 'calça', 'roxo'),
+(2324, 'Calça Jeans','59.99', 'Mari', 'calça', 'azul'),
+(2343, 'Calça Jeans','69.67', 'Mariliu', 'calça', 'azul'),
+(2344, 'Calça Pateta','99.99', 'Orlando', 'calça', 'preto'),
+(2712, 'Calça Mago','93.40', 'Hogwarts', 'calça', 'preto'),
+(4361, 'Short jeans','50.99', 'Mari', 'short', 'azul'),
+(4320, 'Short liso','49.99', 'São Paulo', 'short', 'preto'),
+(4323, 'Short liso','45.89', 'São Paulo', 'short', 'branco');
+(1755, 'Short preto','44.90', 'Diadema', 'short', 'preto'),
 
 INSERT OR IGNORE INTO cliente(username, senha, nome, email, cpf, is_flamengo, is_op, is_souza)
 VALUES('flam', 'mengão', 'Gabriel Barbosa', 'gabigol@fmail.com', '01210455122', 'False', 'True', 'True' ),
@@ -199,20 +208,26 @@ def interface_carrinho(ID):
 
 #ITENS ----------------------------------------
 def listar_item():
-    pesquisar = f"SELECT categoria, cor, item_preco FROM item;"
+    pesquisar = f"SELECT item_nome, categoria, cor, preco FROM item;"
     ponte.execute(pesquisar)
     pesquisa = ponte.fetchall()
     return(pesquisa)
 
 def inserir_item(info):
-    inserir = "INSERT INTO item (item_id, item_preco, lugar_fabricacao, categoria, cor) VALUES(?,?,?,?,?)"
+    inserir = "INSERT INTO item (item_id, item_nome, preco, lugar_fabricacao, categoria, cor) VALUES(?,?,?,?,?,?)"
     ponte.execute(inserir, info)
     conexao.commit()
 
 def alterar_item(coluna, novo, chave):
-    alterar = f"UPDATE item SET {coluna} = '{novo}' WHERE (item_id == '{chave}');"
+    alterar = f"UPDATE item SET {coluna} = {novo} WHERE (item_id == '{chave}');"
     ponte.execute(alterar)
     conexao.commit()
+
+def ver_itens():
+    pesquisar = f"SELECT * FROM item;"
+    ponte.execute(pesquisar)
+    pesquisa = ponte.fetchall()
+    return(pesquisa)
 
     
 #CLIENTES/PEDIDOS ----------------------------------------
@@ -289,11 +304,7 @@ def edit_perfil(ID):
     return (perfil)
 
 # ENDERECO --------------------------------------------------------
-"""SELECT  P.siape, P.nome, P.salario
-FROM  Professor P
-WHERE EXISTS (SELECT M.* FROM 	Ministra M 
-	WHERE P.siape = M.siape AND M.cod_disciplina = ‘IF971’);
-"""
+
 def checar_endereco(ID):
     chEnd = f"SELECT cliente_id FROM cliente WHERE EXISTS (SELECT * FROM endereco WHERE cliente_id == clienteFK AND clienteFK == '{ID}');"
     ponte.execute(chEnd)
@@ -332,7 +343,7 @@ def inserir_item_carrinho(cliente_id, item_id):
     conexao.commit()
 
 def listar_carrinho(cliente_id):
-    carrinho = f"""SELECT I.item_id, C.qtd_item, I.item_preco * C.qtd_item, I.categoria, I.cor
+    carrinho = f"""SELECT I.item_id, C.qtd_item, I.item_nome, I.preco * C.qtd_item, I.categoria, I.cor
     FROM item I INNER JOIN carrinho C
     ON I.item_id = C.item_idFK WHERE clienteFK = 1;"""
     ponte.execute(carrinho)

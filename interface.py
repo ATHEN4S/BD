@@ -1,6 +1,6 @@
 #from bdinit import create_table, inserir_cliente, alterar_cliente, pesquisar_nome, remover_cliente, listar_todos, exibir_um, conexao, login_cliente login_funcionario
 from bdinit import *
-create_table()
+#create_table()
 
 print("\n BOAS VINDAS A LOJA DE ROUPAS")
 
@@ -90,12 +90,14 @@ while opcao != 4 and tipo != 4:
 
     elif(opcao == 3):
         #VER ITENS
+        cont = 0
         print("\nITENS NO CATÁLOGO\n")
         lista = listar_item()
+
         for item in lista:
-            print(item)
-    
-        desconto()
+            cont += 1
+            print(cont,". ",item)
+
         break
 
 
@@ -173,6 +175,18 @@ if LOG == 1:
 
         opcao = 0
 exit
+
+#INTERFACE GERENTE
+if LOG == 3:
+    opcao = int(input("\n MENU - GERENTE \n 1. SETOR\n 2. ESTOQUE \n 3. VENDEDORES DO SETOR\n 4. RELATORIO MENSAL\n 5. SAIR\n   Insira uma opção: "))
+    while True:
+        if (opcao == 0):
+            opcao = int(input("\n MENU - GERENTE \n 1. SETOR\n 2. ESTOQUE \n 3. RELATORIO MENSAL\n 5. SAIR\n   Insira uma opção: "))
+            continue
+        elif (opcao == 1):
+            print("\nPERFIL\n")
+            
+
 
 
 """
