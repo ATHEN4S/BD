@@ -1,7 +1,7 @@
 import random
 import sqlite3
 
-conexao = sqlite3.connect("clientes.db")
+conexao = sqlite3.connect("ver2\clientes.db")
 ponte = conexao.cursor()
 
 def create_table():
@@ -26,7 +26,6 @@ CONSTRAINT ck_email CHECK (Email LIKE '%_@_%._%')
 );
 
 CREATE TABLE IF NOT EXISTS endereco(
-endereco_id integer PRIMARY KEY,
 cidade VarChar(50) NOT NULL,
 estado VarChar(50) NOT NULL,
 rua VarChar(50) NOT NULL,
@@ -143,6 +142,7 @@ VALUES('flam', 'mengão', 'Gabriel Barbosa', 'gabigol@fmail.com', '01210455122',
     #ponte.execute(create)
     ponte.executescript(create)
     conexao.commit()
+    
 
 #LOGINS ----------------------------------------
 def login_funcionario(email, senha):
@@ -205,7 +205,7 @@ def listar_item():
     return(pesquisa)
 
 def inserir_item(info):
-    inserir = "INSERT INTO item (item_id, item_preco, lugar_fabricacao, categoria, cor) VALUES(?,?,?,?,?,?,?,?)"
+    inserir = "INSERT INTO item (item_id, item_preco, lugar_fabricacao, categoria, cor) VALUES(?,?,?,?,?)"
     ponte.execute(inserir, info)
     conexao.commit()
 
@@ -254,9 +254,9 @@ def listar_todos():
 def ID_cliente(chave):
     pesquisar = f"SELECT cliente_id FROM cliente WHERE (username == '{chave}');"
     ponte.execute(pesquisar)
-    id_l = ponte.fetchall()
+    id_l = ponte.fetchone()
     print(id_l[0])
-    return(id_l)
+    return(id_l[0])
 
 def exibir_um(chave):
     pesquisar = f"SELECT * FROM cliente WHERE (username == '{chave}');"
@@ -276,15 +276,46 @@ def desconto():
 
 # PERFIL ----------------------------------------------------------
 def ver_perfil(ID):
-    ver = f"SELECT * FROM cliente WHERE (username == '{ID}');"
+    ver = f"SELECT * FROM cliente WHERE (cliente_id == '{ID}');"
     ponte.execute(ver)
     perfil = ponte.fetchall()
+    perfil = list(perfil[0])
     return (perfil)
 
 def edit_perfil(ID):
-    editar = f"SELECT * FROM cliente WHERE (username == '{ID}');"
+    editar = f"SELECT * FROM cliente WHERE (cliente_id == '{ID}');"
     ponte.execute(editar)
     perfil = ponte.fetchall()
     return (perfil)
+
+# ENDERECO --------------------------------------------------------
+"""SELECT  P.siape, P.nome, P.salario
+FROM  Professor P
+WHERE EXISTS (SELECT M.* FROM 	Ministra M 
+	WHERE P.siape = M.siape AND M.cod_disciplina = ‘IF971’);
+"""
+def checar_endereco(ID):
+    chEnd = f"SELECT cliente_id FROM cliente WHERE EXISTS (SELECT * FROM endereco WHERE cliente_id == clienteFK AND clienteFK == '{ID}');"
+    ponte.execute(chEnd)
+    checou = ponte.fetchall()
+    return bool(checou)
+
+def ver_end(ID):
+    ver = f"SELECT cidade, estado, rua, numero, CEP, clienteFK FROM endereco WHERE clienteFK == '{ID}';"
+    ponte.execute(ver)
+    end = ponte.fetchall()
+    end = list(end[0])
+    return (end)
+
+def adicionar_endereco(ID):
+    cidade = input("Insira sua cidade:\n >")
+    estado = input("Insira seu estado:\n >")
+    rua = input("Insira sua rua(Sem número):\n >")
+    numero = int(input("Insira o número da rua:\n >"))
+    CEP = int(input("Insira seu CEP:\n >"))
+    adEnd = f"INSERT INTO endereco(cidade, estado, rua, numero, CEP, clienteFK) VALUES('{cidade}', '{estado}', '{rua}', {numero}, {CEP}, '{ID}');"
+    ponte.execute(adEnd)
+    print("\n ENDEREÇO ADICIONADO ! \n")
+    conexao.commit()
 
 

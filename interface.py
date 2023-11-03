@@ -10,22 +10,23 @@ LOG = 0
 ID = ""
 tipo = 0
 
-cliente = ["Nome: ", "Username: ", "Senha: ", "Email: ", "CPF: ", "Torcedor do Flamengo: ", "Fã de One Piece: ", "De Souza: "]
+cliente = ["ID: ", "Username: ", "Senha: ", "Nome: ", "Email: ", "CPF: ", "Torcedor do Flamengo: ", "Fã de One Piece: ", "De Souza: "]
+endereco = ["Cidade: ", "Estado: ", "Rua: ", "Numero: ", "CEP: "]
 
-
+#INTERFACE USUARIOS
 opcao = int(input("\n 1.LOGIN\n 2.CADASTRO\n 3.VER ITENS\n 4.FECHAR \n Insira uma opção: "))
 while opcao != 4 and tipo != 4:
     if opcao == 0:
-        opcao = int(input("\n 1.LOGIN\n 2.CADASTRO\n 3.VER ITENS\n 4.FECHAR \n Insira uma opção: "))
+        opcao = int(input("\n      MENU \n 1.LOGIN\n 2.CADASTRO\n 3.VER ITENS\n 4.FECHAR \n Insira uma opção: "))
     if (opcao == 1):
         # LOGINS SEPARADOS EM CLIENTE E FUNCIONARIOS
-        tipo = int(input("\n LOGIN: \n 1. Login como cliente\n 2. Login como funcionario \n 4. Sair\n > "))
+        tipo = int(input("\n LOGIN: \n 1. Login como cliente\n 2. Login como funcionario \n 3. Voltar \n 4. Sair\n > "))
 
         if tipo == 1:
             #CLIENTE
             print("\n LOGIN \n")
-            user = input("Insira o usuario do cliente: ")
-            senha = input("Insira a senha do cliente: ")
+            user = input("   Insira o usuario do cliente: ")
+            senha = input("   Insira a senha do cliente: ")
             info_cliente = login_cliente(user, senha)
             if info_cliente != False:
                 print("\n Login Feito com sucesso \n")
@@ -35,13 +36,21 @@ while opcao != 4 and tipo != 4:
                 break
             else:
                 print("\n Informações incorretas \n")
+                voltar = input("Digite qualquer caractere para voltar pro menu inicial, 1 para tentar novamente.\n >")
+                if voltar == "1":
+                    opcao = 1
+                    tipo = 1
+                    
+                else:
+                    opcao = 0
+                    continue
             
 
         elif tipo == 2:
             #FUNCIONARIO
             print("\n LOGIN FUNCIONÁRIO: \n")
-            email = input("Insira seu email: ")
-            senha = input("Insira seu senha: ")
+            email = input("   Insira seu email: ")
+            senha = input("   Insira seu senha: ")
             id_func = login_funcionario(email,senha)
             if id_func != False:
                 print("\n Login do funcionario feito com sucesso \n")
@@ -53,6 +62,9 @@ while opcao != 4 and tipo != 4:
                     interface_vendedor(id_func)
             else:
                 print("\n Informações incorretas \n")
+        
+        elif tipo == 3:
+            opcao = 0
         elif (tipo == 4):
             print("Obrigada por usar nosso sistema\n\n")
         else:
@@ -62,14 +74,14 @@ while opcao != 4 and tipo != 4:
     elif(opcao == 2):
         #CADASTRO
         print("\n CADASTRO \n")
-        nome = input("Insira o nome do cliente: ")
-        user = input("Insira o usuario do cliente: ")
-        senha = input("Insira a senha do cliente: ")
-        email = input("Insira o email do cliente: ")
-        cpf = input("Insira o cpf do cliente: ")
-        is_flamengo = input("Digite se você torce para o flamengo (True/False): ")
-        is_op = input("Digite se você assiste One Piece (True/False): ")
-        is_souza = input("Digite se você é de souza (True/False): ")
+        nome = input("  Insira o nome do cliente: ")
+        user = input("  Insira o usuario do cliente: ")
+        senha = input("  Insira a senha do cliente: ")
+        email = input("  Insira o email do cliente: ")
+        cpf = input("  Insira o cpf do cliente: ")
+        is_flamengo = input("  Torce para o flamengo (True/False)?\n > ")
+        is_op = input("  Assiste One Piece (True/False)?\n > ")
+        is_souza = input("  É de souza (True/False)?\n > ")
         VALUES = [nome, user, senha, email, cpf, is_flamengo, is_op, is_souza]
         print(VALUES)
         inserir_cliente(VALUES)
@@ -87,17 +99,33 @@ while opcao != 4 and tipo != 4:
         break
 
 
-    
+#INTERFACE CLIENTES
 if LOG == 1:
-    opcao = int(input("\n 1.PERFIL\n2.VER ITENS\n 3.HISTÓRICO DE PEDIDOS\n 4.CARRINHO\n 5. SAIR\n Insira uma opção: "))
+    opcao = int(input("\n BEM VINDOS A LOJA ATH3NAS! \n 1.PERFIL\n 2.VER ITENS\n 3.HISTÓRICO DE PEDIDOS\n 4.CARRINHO\n 5. SAIR\n   Insira uma opção: "))
     while True:
-        if (opcao == 1):
+        if (opcao == 0):
+            opcao = int(input("\n MENU PRINCIPAL \n 1.PERFIL\n 2.VER ITENS\n 3.HISTÓRICO DE PEDIDOS\n 4.CARRINHO\n 5. SAIR\n   Insira uma opção: "))
+            continue
+        elif (opcao == 1):
             print("\nPERFIL\n")
             lista = ver_perfil(ID)
-            for i in range (len(lista)):
-                print(cliente[i],lista[i])
+            
+            #Visualizar Perfil
+            for i in range(len(cliente)-1):
+                print(cliente[i], lista[i])
+
+            #Visualizar Endereço - se não tiver, opção de adicionar um.
+            if checar_endereco(ID) == False:
+                ck = input("Você ainda não adicionou endereço de entrega. Deseja adicionar?\n >")
+                if (ck == "s") or (ck == "S"):
+                    adicionar_endereco(ID)
             else:
-                opcao = 0
+                listaEND = ver_end(ID)
+                for i in range(len(endereco)):
+                    print(endereco[i], listaEND[i])
+            continuar = input("Digite qualquer coisa para prosseguir.\n >")
+            opcao = 0
+            continue
             
         elif (opcao == 2):
             print("\n ITENS DA LOJA: \n")
@@ -134,11 +162,11 @@ if LOG == 1:
             continue
 
         elif (opcao == 5):
-            print("Obrigada por usar nosso sistema\n\n")
+            print("\nObrigada por usar nosso sistema\n")
             break
             
         elif (opcao < 0) or (opcao > 5):
-            print("Essa opcao não existe, selecione outra")
+            print("\nEssa opcao não existe, selecione outra\n")
             continue
 
         opcao = 0
