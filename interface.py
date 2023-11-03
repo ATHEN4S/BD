@@ -1,19 +1,25 @@
 #from bdinit import create_table, inserir_cliente, alterar_cliente, pesquisar_nome, remover_cliente, listar_todos, exibir_um, conexao, login_cliente login_funcionario
 from bdinit import *
-#create_table()
+create_table()
 
 print("\n BOAS VINDAS A LOJA DE ROUPAS")
 
 #opcao = int(input("\n Menu:\n 1. Cadastro Cliente\n 2. Login Cliente \n 3. Ver Itens da Loja \n 4. Login Funcionário \n 5. Sair\n  Insira uma opção: "))
 # Login Funcionario sem cadastro pois a loja vai começar com pelo menos um gerente, e ele que vai cadastrando os funcionarios
 LOG = 0
-ID = 0
+ID = ""
 tipo = 0
-opcao = int(input("\n 1.LOGIN\n 2.CADASTRO\n 3.VER ITENS\n 4. FECHAR \n Insira uma opção: "))
+
+cliente = ["Nome: ", "Username: ", "Senha: ", "Email: ", "CPF: ", "Torcedor do Flamengo: ", "Fã de One Piece: ", "De Souza: "]
+
+
+opcao = int(input("\n 1.LOGIN\n 2.CADASTRO\n 3.VER ITENS\n 4.FECHAR \n Insira uma opção: "))
 while opcao != 4 and tipo != 4:
+    if opcao == 0:
+        opcao = int(input("\n 1.LOGIN\n 2.CADASTRO\n 3.VER ITENS\n 4.FECHAR \n Insira uma opção: "))
     if (opcao == 1):
         # LOGINS SEPARADOS EM CLIENTE E FUNCIONARIOS
-        tipo = int(input("\n LOGIN: \n 1. Login como cliente\n 2. Login como funcionario \n 4. Sair"))
+        tipo = int(input("\n LOGIN: \n 1. Login como cliente\n 2. Login como funcionario \n 4. Sair\n > "))
 
         if tipo == 1:
             #CLIENTE
@@ -47,6 +53,8 @@ while opcao != 4 and tipo != 4:
                     interface_vendedor(id_func)
             else:
                 print("\n Informações incorretas \n")
+        elif (tipo == 4):
+            print("Obrigada por usar nosso sistema\n\n")
         else:
             print("Essa não é uma opcao válida. Tente novamente")
 
@@ -66,6 +74,7 @@ while opcao != 4 and tipo != 4:
         print(VALUES)
         inserir_cliente(VALUES)
         print("Cliente cadastrado com sucesso\n")
+        opcao = 0
 
     elif(opcao == 3):
         #VER ITENS
@@ -80,11 +89,16 @@ while opcao != 4 and tipo != 4:
 
     
 if LOG == 1:
-    opcao = int(input("\n 1.PERFIL 2.VER ITENS\n 3.HISTÓRICO DE PEDIDOS\n 4. CARRINHO \n 5. SAIR\n Insira uma opção: "))
+    opcao = int(input("\n 1.PERFIL\n2.VER ITENS\n 3.HISTÓRICO DE PEDIDOS\n 4.CARRINHO\n 5. SAIR\n Insira uma opção: "))
     while True:
         if (opcao == 1):
-            print("\n PERFIL \n")
-            opcao = 0
+            print("\nPERFIL\n")
+            lista = ver_perfil(ID)
+            for i in range (len(lista)):
+                print(cliente[i],lista[i])
+            else:
+                opcao = 0
+            
         elif (opcao == 2):
             print("\n ITENS DA LOJA: \n")
             lista = listar_item()
@@ -96,6 +110,10 @@ if LOG == 1:
                 except ValueError:
                     print("\n -----------ERRO: NÃO FOI DIGITADO UM NÚMERO INTEIRO----------\n ")
                 #if addao_carrinho not in (item_id) -> NÃO ADD ITEM AO CARRINHO
+                is_item = check_info('item_id', add_aocarrinho, 'item_id', item)
+                if is_item != False:
+                    # inserir no carrinho de compras -> tentarei usar Stored Procedures: MALU ESTUDANDO STORED PROCEDURES AGORA :)
+                    pass
                 # print(" -------- CARRINHO DE COMPRAS ------------")
                 #carrinho = listar_carrinho()
                 ask = input("\nDigite se você deseja continuar (s/n):\n ----> ")
@@ -125,6 +143,7 @@ if LOG == 1:
 
         opcao = 0
 exit
+
 
 """
     elif (opcao == 2):
