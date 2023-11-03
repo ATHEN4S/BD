@@ -126,9 +126,11 @@ if LOG == 1:
             continuar = input("Digite qualquer coisa para prosseguir.\n >")
             opcao = 0
             continue
-            
+        
+        # Ver itens da loja para possivelmente add ao carrinho
         elif (opcao == 2):
             print("\n ITENS DA LOJA: \n")
+            # Se sobrar tempo: criar uma função p o cliente pesquisar por cor/categoria
             lista = listar_item()
             while True:
                 for item in lista:
@@ -137,13 +139,13 @@ if LOG == 1:
                     add_aocarrinho = int(input("\n Digite o ID(INTEIRO) do item que deseja adicionar ao carrinho: \n -----> "))
                 except ValueError:
                     print("\n -----------ERRO: NÃO FOI DIGITADO UM NÚMERO INTEIRO----------\n ")
-                #if addao_carrinho not in (item_id) -> NÃO ADD ITEM AO CARRINHO
                 is_item = check_info('item_id', add_aocarrinho, 'item_id', item)
                 if is_item != False:
-                    # inserir no carrinho de compras -> tentarei usar Stored Procedures: MALU ESTUDANDO STORED PROCEDURES AGORA :)
-                    pass
-                # print(" -------- CARRINHO DE COMPRAS ------------")
-                #carrinho = listar_carrinho()
+                    inserir_item_carrinho(ID, is_item)
+                else:
+                    print("Item ID inválido")
+                print(" -------- CARRINHO DE COMPRAS ------------")
+                listar_carrinho(ID)
                 ask = input("\nDigite se você deseja continuar (s/n):\n ----> ")
                 while ask != 's' and ask != 'n':
                     ask = input("\nDigite se você deseja continuar (s/n):\n ----> ")

@@ -1,7 +1,7 @@
 import random
 import sqlite3
 
-conexao = sqlite3.connect("ver2\clientes.db")
+conexao = sqlite3.connect("clientes.db")
 ponte = conexao.cursor()
 
 def create_table():
@@ -64,7 +64,7 @@ ON UPDATE CASCADE
 CREATE TABLE IF NOT EXISTS carrinho(
 qtd_item integer NOT NULL,
 item_idFK integer NOT NULL,
-pedidoFK integer NOT NULL,
+pedidoFK integer NOT NULL DEFAULT "Pedido não feito",
 clienteFK integer NOT NULL,
 
 FOREIGN KEY(pedidoFK) REFERENCES pedido(pedido_id)
@@ -183,14 +183,14 @@ def interface_carrinho(ID):
     while carrinho_escolha != 4:
         if carrinho_escolha == 1:
             # LISTAR CARRINHO
+            listar_carrinho(ID)
             # REMOVER ITEM
             pass
         elif carrinho_escolha == 2:
             all_pedido_id = lista_pedidos()
             new_pedido_id = random.randint(1000, 100000000) not in all_pedido_id # Gera um id para o pedido
         elif carrinho_escolha == 3:
-            #listar_carrinho(ID)
-            pass
+            listar_carrinho(ID)
         elif carrinho_escolha != 4:
             print("\n ----- OPÇÃO INVÁLIDA, TENTE NOVAMENTE ------- \n")
         carrinho_escolha = int(input("\n 1. Remover Item\n 2. Fechar Pedido\n 3. Ver Carrinho \n 4. Sair do Carrinho"))
@@ -319,3 +319,23 @@ def adicionar_endereco(ID):
     conexao.commit()
 
 
+# CARRINHO -------------
+def inserir_item_carrinho(cliente_id, item_id):
+    qtd_item = 0
+    # Falta checar se tem essa quantidade do item no estoque
+    while qtd_item < 1:
+        qtd_item = int(input("\nDigite a quantidade do item que deseja adicionar ao carrinho\n-------> "))
+        #if qtd_item > qtd_item_estoque....
+    adIt_in_car = f"INSERT INTO carrinho(qtd_item, item_idFK, clienteFK) VALUES({qtd_item}, '{item_id}', '{cliente_id}');"
+    ponte.execute(adIt_in_car)
+    print("\n ITEM ADICIONADO AO CARRINHO COM SUCESSO ! \n")
+    conexao.commit()
+
+def listar_carrinho(cliente_id):
+    carrinho = f"""SELECT I.item_id, C.qtd_item, I.item_preco * C.qtd_item, I.categoria, I.cor
+    FROM item I INNER JOIN carrinho C
+    ON I.item_id = C.item_idFK WHERE clienteFK = 1;"""
+    ponte.execute(carrinho)
+    carrinho = ponte.fetchall()
+    for i in range(len(carrinho)):
+        print(f"\nCódigo: {carrinho[i][0]} || Quantidade: {carrinho[i][1]} || Preço: {carrinho[i][2]} || Categoria: {carrinho[i][3]} || Cor: {carrinho[i][4]}")
