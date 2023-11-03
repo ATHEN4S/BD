@@ -178,14 +178,56 @@ exit
 
 #INTERFACE GERENTE
 if LOG == 3:
-    opcao = int(input("\n MENU - GERENTE \n 1. SETOR\n 2. ESTOQUE \n 3. VENDEDORES DO SETOR\n 4. RELATORIO MENSAL\n 5. SAIR\n   Insira uma opção: "))
+    opcao = int(input("\n MENU - GERENTE \n 1.SETOR\n 2. ESTOQUE \n 3. VENDEDORES DO SETOR\n 4. RELATORIO MENSAL\n 5. SAIR\n   Insira uma opção: "))
     while True:
         if (opcao == 0):
-            opcao = int(input("\n MENU - GERENTE \n 1. SETOR\n 2. ESTOQUE \n 3. RELATORIO MENSAL\n 5. SAIR\n   Insira uma opção: "))
+            opcao = int(input("\n MENU - GERENTE \n 1.SETOR\n 2. ESTOQUE \n 3. VENDEDORES DO SETOR\n 4. RELATORIO MENSAL\n 5. SAIR\n   Insira uma opção: "))
             continue
         elif (opcao == 1):
-            print("\nPERFIL\n")
+            print("\n SETOR\n")
             
+        elif (opcao == 2):
+            print("\n ESTOQUE\n")
+            estoqueop = 0
+            estoqueop = int(input("\n ESTOQUE \n 1. VER ITENS\n 2. ADICIONAR ITEM\n 3. Voltar \n  >"))
+            if estoqueop == 1:
+                infos = ver_itens()
+                for item in infos:
+                    print(item)
+                alt = input("Deseja alterar um item?(s/n)\n >")
+                if alt == "s" or alt == "S":
+                    iid = int(input("\n Item ID: "))
+                    coluna = input("\n Qual atributo(s)?: ")
+                    valores = input("\n Qual(is) valor(es)?: ")
+                    alterar_item(coluna, valores, iid)
+                input("Digite qualquer coisa para voltar.\n >")
+
+            elif estoqueop == 2:
+                print("\n ADICIONAR ITEM\n")
+                #INSERT INTO item (item_id, item_preco, lugar_fabricacao, categoria, cor) VALUES(0, 0, '', '', '');
+                iid = int(input("\n Item ID: "))
+                ipreco = float(input("\n PREÇO: "))
+                lugar = input("\n Lugar de fabricação: ")
+                categoria = input("\n Categoria: ")
+                cor = input("\n Cor: ")
+                VALUES = [iid, ipreco, lugar, categoria, cor]
+                inserir_item(VALUES)
+
+            elif estoqueop == 3:
+                opcao = 0
+                continue
+
+        #elif (opcao == 3):
+
+        #elif (opcao == 4):
+
+        elif (opcao == 5):
+            print("\n Bom trabalho. Até amanhã. \n")
+            break
+            
+        elif (opcao < 0) or (opcao > 5):
+            print("\nEssa opcao não existe, selecione outra\n")
+            continue
 
 
 
