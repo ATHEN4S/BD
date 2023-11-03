@@ -79,6 +79,8 @@ CREATE TABLE IF NOT EXISTS estoque(
 qtd_estoque integer NOT NULL DEFAULT 0,
 item_idFK integer NOT NULL,
 FOREIGN KEY(item_idFK) REFERENCES item(item_id)
+ON DELETE SET NULL
+ON UPDATE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS funcionario(
@@ -139,8 +141,8 @@ VALUES(1758, 'Camisa Twilight', '67.00', 'Mari', 'camisa', 'rosa'),
 (2712, 'Calça Mago','93.40', 'Hogwarts', 'calça', 'preto'),
 (4361, 'Short jeans','50.99', 'Mari', 'short', 'azul'),
 (4320, 'Short liso','49.99', 'São Paulo', 'short', 'preto'),
-(4323, 'Short liso','45.89', 'São Paulo', 'short', 'branco');
-(1755, 'Short preto','44.90', 'Diadema', 'short', 'preto'),
+(4323, 'Short liso','45.89', 'São Paulo', 'short', 'branco'),
+(1755, 'Short preto','44.90', 'Diadema', 'short', 'preto');
 
 INSERT OR IGNORE INTO cliente(username, senha, nome, email, cpf, is_flamengo, is_op, is_souza)
 VALUES('flam', 'mengão', 'Gabriel Barbosa', 'gabigol@fmail.com', '01210455122', 'False', 'True', 'True' ),
@@ -223,7 +225,7 @@ def alterar_item(coluna, novo, chave):
     ponte.execute(alterar)
     conexao.commit()
 
-def ver_itens():
+def ver_est_itens():
     pesquisar = f"SELECT * FROM item;"
     ponte.execute(pesquisar)
     pesquisa = ponte.fetchall()
