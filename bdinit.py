@@ -144,6 +144,27 @@ VALUES(1758, 'Camisa Twilight', '67.00', 'Mari', 'camisa', 'rosa'),
 (4323, 'Short liso','45.89', 'São Paulo', 'short', 'branco'),
 (1755, 'Short preto','44.90', 'Diadema', 'short', 'preto');
 
+INSERT OR IGNORE INTO estoque(item_idFK, qtd_estoque)
+VALUES(1758, 13),
+(1479, 15),
+(1378, 23),
+(1798, 5),
+(1712, 9),
+(1713, 15),
+(1714, 10),
+(1715, 17),
+(1211, 30),
+(1755, 30),
+(2567, 15),
+(2324, 20),
+(2343, 22),
+(2344, 35),
+(2712, 10),
+(4361, 15),
+(4320, 15),
+(4323, 25),
+(1755, 9);
+
 INSERT OR IGNORE INTO cliente(username, senha, nome, email, cpf, is_flamengo, is_op, is_souza)
 VALUES('flam', 'mengão', 'Gabriel Barbosa', 'gabigol@fmail.com', '01210455122', 'False', 'True', 'True' ),
 ('luffy', 'amoonepiece', 'sanji', 'marry@fmail.com', '33218800099', 'True', 'True', 'False'),
@@ -215,9 +236,11 @@ def listar_item():
     pesquisa = ponte.fetchall()
     return(pesquisa)
 
-def inserir_item(info):
-    inserir = "INSERT INTO item (item_id, item_nome, preco, lugar_fabricacao, categoria, cor) VALUES(?,?,?,?,?,?)"
-    ponte.execute(inserir, info)
+def inserir_item(info,einfo):
+    inseriri = "INSERT INTO item (item_id, item_nome, preco, lugar_fabricacao, categoria, cor) VALUES(?,?,?,?,?,?)"
+    ponte.execute(inseriri, info)
+    inserire = f"INSERT INTO estoque(item_idFK, qtd_estoque) VALUES(?,?)"
+    ponte.execute(inserire, einfo)
     conexao.commit()
 
 def alterar_item(coluna, novo, chave):
@@ -226,7 +249,7 @@ def alterar_item(coluna, novo, chave):
     conexao.commit()
 
 def ver_est_itens():
-    pesquisar = f"SELECT * FROM item;"
+    pesquisar = f"SELECT item.*,estoque.* FROM item FULL OUTER JOIN estoque ON item_id = item_idFK;"
     ponte.execute(pesquisar)
     pesquisa = ponte.fetchall()
     return(pesquisa)

@@ -185,10 +185,10 @@ exit
 
 #INTERFACE GERENTE
 if LOG == 3:
-    opcao = int(input("\n MENU - GERENTE \n 1.SETOR\n 2. ESTOQUE \n 3. VENDEDORES DO SETOR\n 4. RELATORIO MENSAL\n 5. SAIR\n   Insira uma opção: "))
+    opcao = int(input("\n MENU - GERENTE \n 1. SETOR\n 2. ESTOQUE \n 3. VENDEDORES DO SETOR\n 4. RELATORIO MENSAL\n 5. SAIR\n   Insira uma opção: "))
     while True:
         if (opcao == 0):
-            opcao = int(input("\n MENU - GERENTE \n 1.SETOR\n 2. ESTOQUE \n 3. VENDEDORES DO SETOR\n 4. RELATORIO MENSAL\n 5. SAIR\n   Insira uma opção: "))
+            opcao = int(input("\n MENU - GERENTE \n 1. SETOR\n 2. ESTOQUE \n 3. VENDEDORES DO SETOR\n 4. RELATORIO MENSAL\n 5. SAIR\n   Insira uma opção: "))
             continue
         elif (opcao == 1):
             print("\n SETOR\n")
@@ -200,7 +200,7 @@ if LOG == 3:
             if estoqueop == 1:
                 infos = ver_est_itens()
                 for item in infos:
-                    print(item)
+                    print(item[:-1])
                 alt = input("Deseja alterar um item?(s/n)\n >")
                 if alt == "s" or alt == "S":
                     iid = int(input("\n Item ID: "))
