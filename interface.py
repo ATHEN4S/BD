@@ -14,10 +14,10 @@ cliente = ["ID: ", "Username: ", "Senha: ", "Nome: ", "Email: ", "CPF: ", "Torce
 endereco = ["Cidade: ", "Estado: ", "Rua: ", "Numero: ", "CEP: "]
 
 #INTERFACE USUARIOS
-opcao = int(input("\n 1.LOGIN\n 2.CADASTRO\n 3.VER ITENS\n 4.FECHAR \n Insira uma opção: "))
+opcao = int(input("\n 1.LOGIN\n 2.CADASTRO\n 3.VER ITENS\n 4.FECHAR \n Insira uma opção:\n  > "))
 while opcao != 4 and tipo != 4:
     if opcao == 0:
-        opcao = int(input("\n      MENU \n 1.LOGIN\n 2.CADASTRO\n 3.VER ITENS\n 4.FECHAR \n Insira uma opção: "))
+        opcao = int(input("\n      MENU \n 1.LOGIN\n 2.CADASTRO\n 3.VER ITENS\n 4.FECHAR \n Insira uma opção:\n  > "))
     if (opcao == 1):
         # LOGINS SEPARADOS EM CLIENTE E FUNCIONARIOS
         tipo = int(input("\n LOGIN: \n 1. Login como cliente\n 2. Login como funcionario \n 3. Voltar \n 4. Sair\n > "))
@@ -65,11 +65,7 @@ while opcao != 4 and tipo != 4:
         
         elif tipo == 3:
             opcao = 0
-        elif (tipo == 4):
-            print("Obrigada por usar nosso sistema\n\n")
-        else:
-            print("Essa não é uma opcao válida. Tente novamente")
-
+        
 
     elif(opcao == 2):
         #CADASTRO
@@ -97,9 +93,18 @@ while opcao != 4 and tipo != 4:
         for item in lista:
             cont += 1
             print(cont,". ",item)
-            
+
         input("Digite qualquer coisa para prosseguir.\n >")
         opcao = 0
+        continue
+
+    elif (opcao == 4):
+        print("\n Volte Sempre !\n\n")
+        break
+    
+    else:
+        print("Essa opcao não existe, selecione outra\n")
+        opcao = int(input("  > "))
         continue
 
 
@@ -193,7 +198,7 @@ if LOG == 3:
             estoqueop = 0
             estoqueop = int(input("\n ESTOQUE \n 1. VER ITENS\n 2. ADICIONAR ITEM\n 3. Voltar \n  >"))
             if estoqueop == 1:
-                infos = ver_itens()
+                infos = ver_est_itens()
                 for item in infos:
                     print(item)
                 alt = input("Deseja alterar um item?(s/n)\n >")
