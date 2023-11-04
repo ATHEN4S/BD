@@ -1,6 +1,6 @@
 #from bdinit import create_table, inserir_cliente, alterar_cliente, pesquisar_nome, remover_cliente, listar_todos, exibir_um, conexao, login_cliente login_funcionario
 from bdinit import *
-create_table()
+#create_table()
 
 print("\n BOAS VINDAS A LOJA DE ROUPAS")
 
@@ -13,39 +13,10 @@ tipo = 0
 cliente = ["ID: ", "Username: ", "Senha: ", "Nome: ", "Email: ", "CPF: ", "Torcedor do Flamengo: ", "Fã de One Piece: ", "De Souza: "]
 endereco = ["Cidade: ", "Estado: ", "Rua: ", "Numero: ", "CEP: "]
 
-def nome(lista):
-  item_nome = input("\nDigite o nome: ").lower()
-  return [dado for dado in lista if item_nome in dado[0].lower()]
-
-def categoria(lista):
-    item_categoria = input("\nDigite a categoria: ").lower()
-    return [dado for dado in lista if item_categoria in dado[1].lower()]
-        
-def cor(lista):
-    item_cor = input("\nDigite a cor desejada: ").lower()
-    return [dado for dado in lista if item_cor in dado[2].lower()]
-        
-def faixa_preco(lista, x, y):
-    while True:
-        item_faixa_preco = input("\nDigite a faixa de preço(ex.: 1, 10): ").replace(" ", "")
-        parts = item_faixa_preco.split(',')
-        if len(parts) != 2 or not all(part.isdigit() for part in parts):
-            print("A string de entrada deve ter dois números separados por vírgula.")
-            continue
-        x, y = map(int, parts)
-        if x >= y:
-            print("O primeiro número deve ser menor que o segundo.")
-            continue
-        return x, y
-        return [dado for dado in lista if x <= dado[3] <= y]
-        
-def local_fabricacao(lista):
-    item_local_fabricacao = input("\nDigite o local de fabricação: ").lower()
-    return [dado for dado in lista if item_local_fabricacao in dado[4].lower()]
-
 #INTERFACE USUARIOS
 opcao = int(input("\n 1.LOGIN\n 2.CADASTRO\n 3.VER ITENS\n 4.FECHAR \n Insira uma opção:\n  > "))
-while opcao != 4 and tipo != 4:
+login_realizado = False
+while (opcao != 4 and tipo != 4) or (login_realizado != True):
     if opcao == 0:
         opcao = int(input("\n      MENU \n 1.LOGIN\n 2.CADASTRO\n 3.VER ITENS\n 4.FECHAR \n Insira uma opção:\n  > "))
     if (opcao == 1):
@@ -58,11 +29,13 @@ while opcao != 4 and tipo != 4:
             user = input("   Insira o usuario do cliente: ")
             senha = input("   Insira a senha do cliente: ")
             info_cliente = login_cliente(user, senha)
+            print("--->", info_cliente)
             if info_cliente != False:
                 print("\n Login Feito com sucesso! \n")
                 ID = ID_cliente(user)
                 LOG = 1
                 # agora está logado -> pode fazer pedidos
+                login_realizado = True
                 break
             else:
                 print("\n Informações incorretas \n")
@@ -84,11 +57,12 @@ while opcao != 4 and tipo != 4:
             if id_func != False:
                 print("\n Login do funcionario feito com sucesso! \n")
                 LOG = 2
-                if check_info('cod_func', id_func, 'cod_func', 'gerente') != False:
+                if check_info('funcFK', id_func, 'funcFK', 'gerente') != False:
                     LOG = 3
                     interface_gerente(id_func)
                 else:
                     interface_vendedor(id_func)
+                login_realizado = True
             else:
                 print("\n Informações incorretas \n")
         
@@ -115,34 +89,17 @@ while opcao != 4 and tipo != 4:
     elif(opcao == 3):
         #VER ITENS
         #verificar produtos por nome, faixa de preço, categoria e se foram fabricados em Mari
+        cont = 0
+        print("\nITENS NO CATÁLOGO\n")
+        lista = listar_item()
         
+        for item in lista:
+            cont += 1
+            print(cont,". ",item)
         
         filtrar_item = input("Deseja filtrar os itens disponíveis? (S/N) > ")
         if filtrar_item.upper() == 'S':
-            escolha_filtro = int(input("\n 1.NOME\n 2.CATEGORIA\n 3.COR\n 4.FAIXA DE PREÇO\n 5.LOCAL DE FABRICAÇÃO\n Escolha um filtro:\n > "))
-            lista = listar_item()
-            resultados = []
-    
-            if escolha_filtro == 1:
-                resultados = nome(lista)
-            elif escolha_filtro == 2:
-                resultados = categoria(lista)
-            elif escolha_filtro == 3:
-                resultados = cor(lista)
-            elif escolha_filtro == 4:
-                resultados = faixa_preco(lista, x, y)
-            elif escolha_filtro == 5:
-                resultados = local_fabricacao(lista)
-            
-            else:
-                print("Essa opção não existe, selecione outra.\n")
-                opcao = int(input(" > "))
-    
-            if resultados:
-                for resultado in resultados:
-                    print(resultado)
-            else:
-                print("\nNão temos esse item no estoque.")
+            filtrar_itens()
                 
         else:
             input("Digite qualquer coisa para prosseguir.\n >")
@@ -198,11 +155,14 @@ if LOG == 1:
         # Ver itens da loja para possivelmente add ao carrinho
         elif (opcao == 2):
             print("\n ITENS DA LOJA: \n")
-            # Se sobrar tempo: criar uma função p o cliente pesquisar por cor/categoria
             lista = listar_item()
             while True:
                 for item in lista:
                     print(item)
+
+                filtrar_itens = input("Deseja filtrar os itens disponíveis? (S/N) > ")
+                if filtrar_itens.upper() == 'S':
+                    filtrar_itens()
                 try:
                     add_aocarrinho = int(input("\n Digite o ID(INTEIRO) do item que deseja adicionar ao carrinho: \n -----> "))
                 except ValueError:
@@ -241,14 +201,14 @@ if LOG == 1:
             continue
 
         opcao = 0
-exit
+
 
 #INTERFACE GERENTE
 if LOG == 3:
-    opcao = int(input("\n MENU - GERENTE \n 1. SETOR\n 2. ESTOQUE \n 3. VENDEDORES DO SETOR\n 4. RELATORIO MENSAL\n 5. SAIR\n   Insira uma opção: "))
+    opcao = int(input("\n MENU - GERENTE \n 1. SETOR\n 2. ESTOQUE \n 3. VER VENDEDORES DO SETOR\n 4. RELATORIO MENSAL\n 5. ADICIONAR VENDEDOR\n 6. SAIR\n  Insira uma opção: "))
     while True:
         if (opcao == 0):
-            opcao = int(input("\n MENU - GERENTE \n 1. SETOR\n 2. ESTOQUE \n 3. VENDEDORES DO SETOR\n 4. RELATORIO MENSAL\n 5. SAIR\n   Insira uma opção: "))
+            opcao = int(input("\n MENU - GERENTE \n 1. SETOR\n 2. ESTOQUE \n 3. VER VENDEDORES DO SETOR\n 4. RELATORIO MENSAL\n 5. ADICIONAR VENDEDOR\n 6. SAIR\n   Insira uma opção: "))
             continue
         elif (opcao == 1):
             print("\n SETOR\n")
@@ -284,19 +244,67 @@ if LOG == 3:
                 opcao = 0
                 continue
 
-        #elif (opcao == 3):
+        elif (opcao == 3): # 3. VENDEDORES DO SETOR
+            vendedor_gerente(id_func)
 
-        #elif (opcao == 4):
+        elif (opcao == 4):
+            pass
 
         elif (opcao == 5):
+            all_func_id = lista_id_funcionarios()
+            while True:
+                new_vendedor_id=random.randrange(1, 10000)
+                if new_vendedor_id not in all_func_id:
+                    break
+            add_vendedor_supervisao(id_func, new_vendedor_id)
+
+        elif (opcao == 6):
             print("\n Bom trabalho. Até amanhã. \n")
             break
             
         elif (opcao < 0) or (opcao > 5):
             print("\nEssa opcao não existe, selecione outra\n")
             continue
+        opcao = 0
+#INTERFACE VENDEDOR --------------------------------------
+if LOG == 2:
+    opcao = int(input("\n MENU - VENDEDOR \n 1. VER PEDIDOS PARA EFETIVAR\n 2. VER ITENS COM BAIXO ESTOQUE \n 3. VER VENDAS EFETIVADAS\n 4. SAIR\n   Insira uma opção: ")) # Ver pedidos que efetivou
+    while True:
+        if (opcao == 0):
+            opcao = int(input("\n MENU - VENDEDOR \n 1. EFETIVAR COMPRA\n 2. VER ITENS COM BAIXO ESTOQUE \n 3. VER VENDAS EFETIVADAS\n 4. SAIR\n  Insira uma opção: "))
+            continue
+        elif (opcao == 1):
+            pedidoslista = listar_pedidos()
+            if listar_pedidos == False: # Se não existe algum item para efetivar:
+                print("\n Não existe itens para efetivar! \n")
+                print("\n Bom trabalho. Até amanhã. \n")
+                break
+            try:
+                cod_pedido = int(input("\nDigite o codigo do pedido que você quer efetivar\n ---> "))
+            except ValueError:
+                print("\n Código Digitado Inválido")
+                break
+            if cod_pedido in pedidoslista: # checar se realmente está nos pedidos em andamento
+                alterar_status_pedido(cod_pedido, id_func) # ir na tabela de pedido, carrinho(vai esvaziar se efetivar, e ver qtd de item específico), estoque(-qtd), item(consultar), vendedor(add pedido a ele)
+                print('\nStatus Alterado com Sucesso!!')
+            else:
+                print("\nID não encontrado!")
+        elif (opcao == 2):
+                exibir_estoquebaixo()
 
+                input("Digite qualquer coisa para voltar.\n >")
 
+        elif (opcao == 3):
+                dados = input("\n digite seu ")
+                listar_pedido_vendedor(vendedor_id)
+                input("Digite qualquer coisa para voltar.\n >")
+
+        elif (opcao == 4):
+            print("\n Bom trabalho. Até amanhã. \n")
+            break
+        opcao = 0
+
+exit
 
 
 """

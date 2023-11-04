@@ -16,26 +16,37 @@ with conexao:
         conexao.commit()
 
 create_table()
+
+#vendedor_gerente(2)
 """
-inserir = "INSERT INTO pedido(pedido_id, qtd_itens, valor_total, pagamento, status_pagamento, clienteFK) VALUES(?,?,?,?,?,?)"
-ponte.execute(inserir, [31234, 1, 10, 'Crédito', 'Em_andamento', 1])
+inserir = "INSERT INTO carrinho(qtd_item, item_idFK, clienteFK) VALUES(?,?,?)"
+ponte.execute(inserir, [2, 1479, 1])
+conexao.commit()
+inserir = "INSERT INTO carrinho(qtd_item, item_idFK, clienteFK) VALUES(?,?,?)"
+ponte.execute(inserir, [3, 2324, 1])
 conexao.commit()
 
-pesquisar = f"SELECT pedido_id FROM pedido;"
+inserir = "INSERT INTO pedido(pedido_id, qtd_itens, valor_total, pagamento, status_pagamento, status, mes, clienteFK) VALUES(?,?,?,?,?,?,?,?)"
+ponte.execute(inserir, [31234, 5, 10, 'Crédito', 'Em_andamento', 'Não Confirmado','1', 1])
+conexao.commit()
+pedido_carrinho = f"UPDATE carrinho SET pedidoFK = 31234 WHERE clienteFK = 1"
+ponte.execute(pedido_carrinho)
+conexao.commit()
+
+# EXEMPLO DE VIEW
+item_id = 1479
+pesquisar = f"CREATE TEMPORARY VIEW view_name AS
+SELECT * FROM item I INNER JOIN estoque E ON item_id = item_idFK WHERE item_idFK = {item_id};"
 ponte.execute(pesquisar)
 pesquisa = ponte.fetchall()
-for pedido in pesquisa[:][0]:
-        print(pedido)
+
+
+pesquisar = "SELECT* FROM view_name"
+ponte.execute(pesquisar)
+pesquisa = ponte.fetchall()
+print(pesquisa)
+pesquisar = "SELECT qtd_estoque FROM view_name"
+ponte.execute(pesquisar)
+pesquisa = ponte.fetchall()
+print(pesquisa)
 """
-while True:
-        try:
-                add_carrinho = int(input("\n Digite o ID(INTEIRO) do item que deseja adicionar ao carrinho: \n -----> "))
-        except ValueError:
-                print("ERRO: NÃO FOI DIGITADO UM NÚMERO INTEIRO ")
-        
-        #carrinho = listar_carrinho()
-        ask = input("Digite se você deseja continuar (s/n):\n ----> ")
-        while ask != 's' and ask != 'n':
-                ask = input("Digite se você deseja continuar (s/n):\n ----> ")
-        if ask == 'n':
-                break
