@@ -13,6 +13,36 @@ tipo = 0
 cliente = ["ID: ", "Username: ", "Senha: ", "Nome: ", "Email: ", "CPF: ", "Torcedor do Flamengo: ", "Fã de One Piece: ", "De Souza: "]
 endereco = ["Cidade: ", "Estado: ", "Rua: ", "Numero: ", "CEP: "]
 
+def nome(lista):
+  item_nome = input("\nDigite o nome: ").lower()
+  return [dado for dado in lista if item_nome in dado[0].lower()]
+
+def categoria(lista):
+    item_categoria = input("\nDigite a categoria: ").lower()
+    return [dado for dado in lista if item_categoria in dado[1].lower()]
+        
+def cor(lista):
+    item_cor = input("\nDigite a cor desejada: ").lower()
+    return [dado for dado in lista if item_cor in dado[2].lower()]
+        
+def faixa_preco(lista, x, y):
+    while True:
+        item_faixa_preco = input("\nDigite a faixa de preço(ex.: 1, 10): ").replace(" ", "")
+        parts = item_faixa_preco.split(',')
+        if len(parts) != 2 or not all(part.isdigit() for part in parts):
+            print("A string de entrada deve ter dois números separados por vírgula.")
+            continue
+        x, y = map(int, parts)
+        if x >= y:
+            print("O primeiro número deve ser menor que o segundo.")
+            continue
+        return x, y
+        return [dado for dado in lista if x <= dado[3] <= y]
+        
+def local_fabricacao(lista):
+    item_local_fabricacao = input("\nDigite o local de fabricação: ").lower()
+    return [dado for dado in lista if item_local_fabricacao in dado[4].lower()]
+
 #INTERFACE USUARIOS
 opcao = int(input("\n 1.LOGIN\n 2.CADASTRO\n 3.VER ITENS\n 4.FECHAR \n Insira uma opção:\n  > "))
 while opcao != 4 and tipo != 4:
@@ -29,7 +59,7 @@ while opcao != 4 and tipo != 4:
             senha = input("   Insira a senha do cliente: ")
             info_cliente = login_cliente(user, senha)
             if info_cliente != False:
-                print("\n Login Feito com sucesso \n")
+                print("\n Login Feito com sucesso! \n")
                 ID = ID_cliente(user)
                 LOG = 1
                 # agora está logado -> pode fazer pedidos
@@ -45,7 +75,6 @@ while opcao != 4 and tipo != 4:
                     opcao = 0
                     continue
             
-
         elif tipo == 2:
             #FUNCIONARIO
             print("\n LOGIN FUNCIONÁRIO: \n")
@@ -53,7 +82,7 @@ while opcao != 4 and tipo != 4:
             senha = input("   Insira seu senha: ")
             id_func = login_funcionario(email,senha)
             if id_func != False:
-                print("\n Login do funcionario feito com sucesso \n")
+                print("\n Login do funcionario feito com sucesso! \n")
                 LOG = 2
                 if check_info('cod_func', id_func, 'cod_func', 'gerente') != False:
                     LOG = 3
@@ -65,7 +94,6 @@ while opcao != 4 and tipo != 4:
         
         elif tipo == 3:
             opcao = 0
-        
 
     elif(opcao == 2):
         #CADASTRO
@@ -81,23 +109,54 @@ while opcao != 4 and tipo != 4:
         VALUES = [nome, user, senha, email, cpf, is_flamengo, is_op, is_souza]
         print(VALUES)
         inserir_cliente(VALUES)
-        print("Cliente cadastrado com sucesso\n")
+        print("Cliente cadastrado com sucesso!\n")
         opcao = 0
 
     elif(opcao == 3):
         #VER ITENS
+        #verificar produtos por nome, faixa de preço, categoria e se foram fabricados em Mari
+        
+        
+        filtrar_item = input("Deseja filtrar os itens disponíveis? (S/N) > ")
+        if filtrar_item.upper() == 'S':
+            escolha_filtro = int(input("\n 1.NOME\n 2.CATEGORIA\n 3.COR\n 4.FAIXA DE PREÇO\n 5.LOCAL DE FABRICAÇÃO\n Escolha um filtro:\n > "))
+            lista = listar_item()
+            resultados = []
+    
+            if escolha_filtro == 1:
+                resultados = nome(lista)
+            elif escolha_filtro == 2:
+                resultados = categoria(lista)
+            elif escolha_filtro == 3:
+                resultados = cor(lista)
+            elif escolha_filtro == 4:
+                resultados = faixa_preco(lista, x, y)
+            elif escolha_filtro == 5:
+                resultados = local_fabricacao(lista)
+            
+            else:
+                print("Essa opção não existe, selecione outra.\n")
+                opcao = int(input(" > "))
+    
+            if resultados:
+                for resultado in resultados:
+                    print(resultado)
+            else:
+                print("\nNão temos esse item no estoque.")
+                
+        else:
+            input("Digite qualquer coisa para prosseguir.\n >")
+            opcao = 0
+            continue
+
         cont = 0
         print("\nITENS NO CATÁLOGO\n")
         lista = listar_item()
-
+        
         for item in lista:
             cont += 1
             print(cont,". ",item)
-
-        input("Digite qualquer coisa para prosseguir.\n >")
-        opcao = 0
-        continue
-
+    
     elif (opcao == 4):
         print("\n Volte Sempre !\n\n")
         break
@@ -164,7 +223,8 @@ if LOG == 1:
             
         elif (opcao == 3):
             print("\n HISTORICO DE PEDIDOS: \n")
-            desconto()
+            
+            
             continue
         
         elif (opcao == 4):
@@ -173,7 +233,7 @@ if LOG == 1:
             continue
 
         elif (opcao == 5):
-            print("\nObrigada por usar nosso sistema\n")
+            print("\nObrigada por usar nosso sistema. Volte sempre!\n")
             break
             
         elif (opcao < 0) or (opcao > 5):
