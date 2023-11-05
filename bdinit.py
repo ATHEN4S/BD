@@ -1,6 +1,6 @@
 import random
 import sqlite3
-from datetime import date
+from datetime import datetime
 from func_filters import *
 
 conexao = sqlite3.connect("clientes.db")
@@ -99,6 +99,7 @@ CREATE TABLE IF NOT EXISTS vendedor(
 conf_venda VarChar(50) NOT NULL DEFAULT '0',
 funcFK integer NOT NULL,
 pedido_idFK integer NOT NULL DEFAULT 0,
+mes_efetivado VarChar(3) NOT NULL DEFAULT '0',
 FOREIGN KEY(funcFK) REFERENCES funcionario(cod_func)
 ON DELETE SET NULL
 ON UPDATE CASCADE,
@@ -117,25 +118,6 @@ FOREIGN KEY(vendedorFK) REFERENCES vendedor(cod_func)
 ON DELETE SET NULL
 ON UPDATE CASCADE
 );
-
-INSERT OR IGNORE INTO funcionario(cod_func, nome, senha, email, cpf)
-VALUES(1, 'First', '123', 'super_gerente@hotmail.com', '00000000001'),
-(2, 'Second', 123, 'second@hotmail.com', '00000000002'),
-(3, 'Third', 123, 'third@hotmail.com', '00000000003'),
-(4, 'Fourth', 123, 'Fourth@hotmail.com', '00000000004'),
-(5, 'Fifth', 123, 'fifth@hotmail.com', '00000000005'),
-(6, 'Sixth', 123, 'sixth@hotmail.com', '00000000006'),
-(7, 'Seventh', 123, 'seventh@hotmail.com', '00000000007'),
-(8, 'Eighth', 123, 'eighth@hotmail.com', '00000000008');
-INSERT OR IGNORE INTO gerente(funcFK)
-VALUES(1),
-(2);
-INSERT OR IGNORE INTO vendedor(funcFK)
-VALUES(3),(4),(5),(6),(7),(8);
-INSERT OR IGNORE INTO gerente(funcFK, vendedorFK)
-VALUES(1, 3),
-(1, 4),
-(1, 5);
 
 INSERT OR IGNORE INTO item(item_id, item_nome, preco, lugar_fabricacao, categoria, cor )
 VALUES(1758, 'Camisa Twilight', '67.00', 'Mari', 'camisa', 'rosa'),
@@ -183,20 +165,48 @@ INSERT OR IGNORE INTO cliente(username, senha, nome, email, cpf, is_flamengo, is
 VALUES('flam', 'mengão', 'Gabriel Barbosa', 'gabigol@fmail.com', '01210455122', 'False', 'True', 'True' ),
 ('luffy', 'amoonepiece', 'sanji', 'marry@fmail.com', '33218800099', 'True', 'True', 'False'),
 ('torta', 'pineapple', 'Pinkie Pie', 'PINKIE@fmail.com', '01210001122', 'True', 'False', 'False'),('amanhecer', '1senha23', 'Twilight', 'ponypony@fmail.com', '01238237890', 'False', 'False', 'True'),('Equestria', '123senha', 'Equestria', '4o4@fmail.com', '01234567890', 'True', 'True', 'True'),('maça', 'abc1232', 'Apple Jack', 'macieira@pmail.com', '22344566700', 'False', 'True', 'True'),('Spark', 'milan777', 'Rarity', 'brilho@pmail.com', '11122233344', 'False', 'False', 'False'),('Angel', 'iisenha6', 'Angela', 'anf@gmail.com', '01666237890', 'False', 'False', 'False'),('Gabriel', 'senha339', 'Cabri', 'leaf@fmail.com', '01010129277', 'False', 'False', 'False'),('amigue','senha332', 'Monica', 'sansao@fmail.com', '00003333222', 'False', 'True', 'True'),('bolinha1', 'rsenha331','Cebolinha', '5sorte@fmail.com', '01672929772', 'True', 'False', 'True'),('maga', 'senha330', 'Magali', 'kkkkk@gmail.com', '11119999222', 'False', 'False', 'False'),('cascadebala4', 'senha334', 'Cascao', 'oinc@fmail.com', '01018888292', 'True', 'False', 'True'),('len', 'senha221', 'Milena', 'natureza@fmail.com', '01013333666', 'True', 'True', 'True'),('fran', 'senha888', 'Franjinha', 'ciencia@fmail.com', '33334444551', 'True', 'True', 'False'),('Tom', '123senha', 'Timothy', 'ema@fmail.com', '01010129292', 'False', 'False', 'False'),('Jerry', 'ratinho123', 'Jeremias de Souza','jerro@fmail.com', '03168442024', 'True', 'True', 'True'),('RainbowDash', 'Imnotponny2', 'Anna Luiza de Albuquerque', 'aninhaalbuq@fmail.com', '00345162366', 'False', 'False', 'False'),('Vineo', 'thisisme123', 'Angelina Jullie', 'jullita2334@fmail.com', '11546325851', 'False', 'False', 'False');
+
+INSERT OR IGNORE INTO funcionario(cod_func, nome, senha, email, cpf)
+VALUES(1, 'First', '123', 'super_gerente@hotmail.com', '00000000001'),
+(2, 'Second', 123, 'second@hotmail.com', '00000000002'),
+(3, 'Third', 123, 'third@hotmail.com', '00000000003'),
+(4, 'Fourth', 123, 'Fourth@hotmail.com', '00000000004'),
+(5, 'Fifth', 123, 'fifth@hotmail.com', '00000000005'),
+(6, 'Sixth', 123, 'sixth@hotmail.com', '00000000006'),
+(7, 'Seventh', 123, 'seventh@hotmail.com', '00000000007'),
+(8, 'Eighth', 123, 'eighth@hotmail.com', '00000000008');
+INSERT OR IGNORE INTO gerente(funcFK)
+VALUES(1),
+(2);
+INSERT OR IGNORE INTO vendedor(funcFK)
+VALUES(3),(4),(5),(6),(7),(8);
+INSERT OR IGNORE INTO gerente(funcFK, vendedorFK)
+VALUES(1, 3),
+(1, 4),
+(1, 5);
 """
 # Falta criar os itens
     #ponte.execute(create)
     ponte.executescript(create)
     conexao.commit()
+    inserir_item_carrinho(1, 1479, 1)
+    inserir_item_carrinho(1, 1378, 1)
+    inserir_item_carrinho(2, 2344, 4)
+    inserir_item_carrinho(3, 1755, 2)
+    inserir_item_carrinho(4, 1798, 3)
+    inserir_item_carrinho(4, 1378, 1)
+    inserir_item_carrinho(4, 1755, 1)
+    inserir_item_carrinho(5, 4320, 2)
+    inserir_item_carrinho(5, 1211, 1)
+    add_pedido(1, 'Cartão', 42)
+    add_pedido(2, 'Cartão', 53)
+    alterar_status_pedido(42, 3)
     
 
 #LOGINS ----------------------------------------
 def login_funcionario(email, senha):
-    print('a')
     if check_info('email', email, 'cod_func', 'funcionario') != False and check_info('senha', senha, 'cod_func', 'funcionario') != False:
-        print('b')
         return check_info('email', email,'cod_func', 'funcionario')
-    print('c')
     return False
 
 def login_cliente(user, senha):
@@ -369,6 +379,7 @@ def desconto():
     conexao.commit()
 
 def add_pedido(cliente_id, pagamento, pedido_id):
+    mes_atual = datetime.today().month
     qtd_itens_total = f"SELECT SUM(qtd_item) FROM carrinho WHERE clienteFK = {cliente_id}"
     ponte.execute(qtd_itens_total)
     qtd_itens_total = ponte.fetchall()
@@ -379,7 +390,7 @@ def add_pedido(cliente_id, pagamento, pedido_id):
     ponte.execute(v_total)
     v_total = ponte.fetchall()
     v_total = v_total[0][0]
-    new_pedido = f"INSERT INTO pedido(pedido_id, qtd_itens, valor_total, pagamento, status_pagamento, status, mes, clienteFK) VALUES({pedido_id},{qtd_itens_total},{v_total},'{pagamento}','Em andamento','Não Confirmado','1', 1);"
+    new_pedido = f"INSERT INTO pedido(pedido_id, qtd_itens, valor_total, pagamento, status_pagamento, status, mes, clienteFK) VALUES({pedido_id},{qtd_itens_total},{v_total},'{pagamento}','Em andamento','Não Confirmado',{mes_atual}, {cliente_id});"
     ponte.execute(new_pedido)
     conexao.commit()
     pesquisar = f"SELECT * FROM pedido WHERE clienteFK = {cliente_id};"
@@ -452,13 +463,7 @@ def adicionar_endereco(ID):
 
 
 # CARRINHO -------------
-def inserir_item_carrinho(cliente_id, item_id):
-    qtd_item = 0
-    no_estoque = estoque_item_especifico(item_id) # Quantidade desse item específico no estoque
-    while qtd_item < 1 or qtd_item > no_estoque:
-        qtd_item = int(input("\nDigite a quantidade do item que deseja adicionar ao carrinho\n-------> "))
-        if qtd_item > no_estoque:
-            print("---- Não existe essa quantidade de itens no estoque, tente novamente... ----\n")
+def inserir_item_carrinho(cliente_id, item_id, qtd_item):
     adIt_in_car = f"INSERT INTO carrinho(qtd_item, item_idFK, clienteFK) VALUES({qtd_item}, '{item_id}', '{cliente_id}');"
     ponte.execute(adIt_in_car)
     print("\n ITEM ADICIONADO AO CARRINHO COM SUCESSO ! \n")
@@ -570,8 +575,7 @@ def listar_pedidos():
     ponte.execute(pesquisar)
     pesquisa = ponte.fetchall()
     if len(pesquisa) == 0:
-        print("\n Não existe item para efetivar \n")
-        return False
+        return -1
     count = 0
     lista_pedidos = []
     for i in pesquisa:
@@ -593,16 +597,14 @@ def listar_pedidos():
     return lista_pedidos
 
 def alterar_status_pedido(cod_pedido, id_vendedor):
-    #mes = date.month # <attribute 'month' of 'datetime.date' objects>
-    #print(mes)
+    mes_atual = datetime.today().month
 
     item = f"""SELECT   I.item_id, C.qtd_item 
                         FROM item I INNER JOIN carrinho C
                         ON (I.item_id = C.item_idFK) WHERE C.pedidoFK = {cod_pedido};"""
     ponte.execute(item)
     item = ponte.fetchall()
-    
-    pesquisar = f"SELECT qtd_itens FROM pedido WHERE (pedido_id = cod_pedido);" 
+     
     count = 0
     for i in item:
         subtrair = f"UPDATE estoque SET qtd_estoque = qtd_estoque - {item[count][1]} WHERE(item_idFK = {item[count][0]});"
@@ -610,12 +612,19 @@ def alterar_status_pedido(cod_pedido, id_vendedor):
         conexao.commit()
         count+=1
 
-    update_status = f"UPDATE pedido SET status = 'Concluído', status_pagamento = 'Concluído' WHERE(pedido_id = {cod_pedido});"
+    update_status = f"UPDATE pedido SET status = 'Concluído', status_pagamento = 'Concluído', mes = {str(mes_atual)} WHERE(pedido_id = {cod_pedido});"
     ponte.execute(update_status)
     conexao.commit()
 
+    # Esvaziar carrinho ja que a compra foi efetivada
+    select_cliente = f"SELECT P.clienteFK FROM pedido P WHERE pedido_id = {cod_pedido}"
+    ponte.execute(select_cliente)
+    select_cliente = ponte.fetchall()
+    cliente_id = select_cliente[0][0]
+    update_carrinho = f"DELETE FROM carrinho WHERE clienteFK = {cliente_id}"
+
     # Colocar pedido no vendedor
-    inserir = f"INSERT INTO vendedor(funcFK, pedido_idFK) VALUES({id_vendedor},{cod_pedido})"
+    inserir = f"INSERT INTO vendedor(funcFK, pedido_idFK, mes_efetivado) VALUES({id_vendedor},{cod_pedido},{mes_atual})"
     ponte.execute(inserir)
     conexao.commit()
 
@@ -669,7 +678,7 @@ def add_vendedor_supervisao(id_gerente, new_vendedor_id):
     inserir_func = "INSERT INTO funcionario (cod_func, nome, email, senha, cpf) VALUES(?,?,?,?,?)"
     ponte.execute(inserir_func, dados)
     inserir_vend = "INSERT INTO vendedor (funcFK) VALUES(?)"
-    ponte.execute(inserir_vend, id_func)
+    ponte.execute(inserir_vend, new_vendedor_id)
     inserir_in_gerente = "INSERT INTO gerente (funcFK, vendedorFK) VALUES(?,?)"
     ponte.execute(inserir_in_gerente, [id_gerente, new_vendedor_id])
     conexao.commit()

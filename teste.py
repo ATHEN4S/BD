@@ -15,7 +15,7 @@ with conexao:
         ponte.executescript(deletar)
         conexao.commit()
 
-create_table()
+#create_table()
 
 #vendedor_gerente(2)
 """

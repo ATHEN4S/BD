@@ -19,7 +19,7 @@ login_realizado = False
 while (opcao != 4 and tipo != 4) or (login_realizado != True):
     if opcao == 0:
         opcao = int(input("\n      MENU \n 1.LOGIN\n 2.CADASTRO\n 3.VER ITENS\n 4.FECHAR \n Insira uma opção:\n  > "))
-    if (opcao == 1):
+    if (opcao == 1) and login_realizado != True:
         # LOGINS SEPARADOS EM CLIENTE E FUNCIONARIOS
         tipo = int(input("\n LOGIN: \n 1. Login como cliente\n 2. Login como funcionario \n 3. Voltar \n 4. Sair\n > "))
 
@@ -118,6 +118,9 @@ while (opcao != 4 and tipo != 4) or (login_realizado != True):
         print("\n Volte Sempre !\n\n")
         break
     
+    elif login_realizado == True:
+        break
+
     else:
         print("Essa opcao não existe, selecione outra\n")
         opcao = int(input("  > "))
@@ -169,7 +172,13 @@ if LOG == 1:
                     print("\n -----------ERRO: NÃO FOI DIGITADO UM NÚMERO INTEIRO----------\n ")
                 is_item = check_info('item_id', add_aocarrinho, 'item_id', item)
                 if is_item != False:
-                    inserir_item_carrinho(ID, is_item)
+                    qtd_item = 0
+                    no_estoque = estoque_item_especifico(is_item) # Quantidade desse item específico no estoque
+                    while qtd_item < 1 or qtd_item > no_estoque:
+                        qtd_item = int(input("\nDigite a quantidade do item que deseja adicionar ao carrinho\n-------> "))
+                        if qtd_item > no_estoque:
+                            print("---- Não existe essa quantidade de itens no estoque, tente novamente... ----\n")
+                    inserir_item_carrinho(ID, is_item, qtd_item)
                 else:
                     print("Item ID inválido")
                 print(" -------- CARRINHO DE COMPRAS ------------")
@@ -240,7 +249,7 @@ if LOG == 3:
                 VALUES = [iid, ipreco, lugar, categoria, cor]
                 inserir_item(VALUES)
 
-            elif estoqueop == 3:
+            elif estoqueop == 3: # Relatorio Mensal
                 opcao = 0
                 continue
 
@@ -275,20 +284,19 @@ if LOG == 2:
             continue
         elif (opcao == 1):
             pedidoslista = listar_pedidos()
-            if listar_pedidos == False: # Se não existe algum item para efetivar:
-                print("\n Não existe itens para efetivar! \n")
-                print("\n Bom trabalho. Até amanhã. \n")
-                break
-            try:
-                cod_pedido = int(input("\nDigite o codigo do pedido que você quer efetivar\n ---> "))
-            except ValueError:
-                print("\n Código Digitado Inválido")
-                break
-            if cod_pedido in pedidoslista: # checar se realmente está nos pedidos em andamento
-                alterar_status_pedido(cod_pedido, id_func) # ir na tabela de pedido, carrinho(vai esvaziar se efetivar, e ver qtd de item específico), estoque(-qtd), item(consultar), vendedor(add pedido a ele)
-                print('\nStatus Alterado com Sucesso!!')
+            if listar_pedidos() != -1: # Se não existe algum item para efetivar:
+                try:
+                    cod_pedido = int(input("\nDigite o codigo do pedido que você quer efetivar\n ---> "))
+                except ValueError:
+                    print("\n Código Digitado Inválido")
+                    break
+                if cod_pedido in pedidoslista: # checar se realmente está nos pedidos em andamento
+                    alterar_status_pedido(cod_pedido, id_func) # ir na tabela de pedido, carrinho(vai esvaziar se efetivar, e ver qtd de item específico), estoque(-qtd), item(consultar), vendedor(add pedido a ele)
+                    print('\nStatus Alterado com Sucesso!!')
+                else:
+                    print("\nID não encontrado!")
             else:
-                print("\nID não encontrado!")
+                print("\n Não existe item para efetivar \n")
         elif (opcao == 2):
                 exibir_estoquebaixo()
 
@@ -296,7 +304,7 @@ if LOG == 2:
 
         elif (opcao == 3):
                 dados = input("\n digite seu ")
-                listar_pedido_vendedor(vendedor_id)
+                listar_pedido_vendedor(id_func)
                 input("Digite qualquer coisa para voltar.\n >")
 
         elif (opcao == 4):
