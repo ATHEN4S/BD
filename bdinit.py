@@ -96,7 +96,6 @@ CONSTRAINT senha CHECK (length(senha) < 15 and length(senha) >= 3 )
 );
 
 CREATE TABLE IF NOT EXISTS vendedor(
-conf_venda VarChar(50) NOT NULL DEFAULT '0',
 funcFK integer NOT NULL,
 pedido_idFK integer NOT NULL DEFAULT 0,
 mes_efetivado VarChar(3) NOT NULL DEFAULT '0',
@@ -138,7 +137,7 @@ VALUES(1758, 'Camisa Twilight', '67.00', 'Mari', 'camisa', 'rosa'),
 (4361, 'Short jeans','50.99', 'Mari', 'short', 'azul'),
 (4320, 'Short liso','49.99', 'São Paulo', 'short', 'preto'),
 (4323, 'Short liso','45.89', 'São Paulo', 'short', 'branco'),
-(1755, 'Short preto','44.90', 'Diadema', 'short', 'preto');
+(1756, 'Short preto','44.90', 'Diadema', 'short', 'preto');
 
 INSERT OR IGNORE INTO estoque(item_idFK, qtd_estoque)
 VALUES(1758, 13),
@@ -159,7 +158,7 @@ VALUES(1758, 13),
 (4361, 15),
 (4320, 15),
 (4323, 25),
-(1755, 9);
+(1756, 9);
 
 INSERT OR IGNORE INTO cliente(username, senha, nome, email, cpf, is_flamengo, is_op, is_souza)
 VALUES('flam', 'mengão', 'Gabriel Barbosa', 'gabigol@fmail.com', '01210455122', 'False', 'True', 'True' ),
@@ -184,20 +183,11 @@ INSERT OR IGNORE INTO gerente(funcFK, vendedorFK)
 VALUES(1, 3),
 (1, 4),
 (1, 5);
-
-
-
-CREATE VIEW RelatorioMensal AS
-SELECT  vendedor.funcFK, vendedor.pedido_idFK,pedido.mes, pedido.qtd_itens, pedido.valor_total
-FROM  vendedor FULL OUTER JOIN pedido ON pedido.pedido_id = vendedor.pedido_idFK WHERE pedido.mes = 11;
-
-
-
 """
-# Falta criar os itens
     #ponte.execute(create)
     ponte.executescript(create)
     conexao.commit()
+
     inserir_item_carrinho(1, 1479, 1)
     inserir_item_carrinho(1, 1378, 1)
     inserir_item_carrinho(2, 2344, 4)
@@ -207,9 +197,14 @@ FROM  vendedor FULL OUTER JOIN pedido ON pedido.pedido_id = vendedor.pedido_idFK
     inserir_item_carrinho(4, 1755, 1)
     inserir_item_carrinho(5, 4320, 2)
     inserir_item_carrinho(5, 1211, 1)
-    add_pedido(1, 'Cartão', 42)
-    add_pedido(2, 'Cartão', 53)
+    inserir_item_carrinho(6, 4361, 2)
+    inserir_item_carrinho(6, 1756, 1)
+    add_pedido(1, 'Crédito', 42)
+    add_pedido(2, 'Débito', 53)
+    add_pedido(3, 'Berries', 200)
+    add_pedido(4, 'Berries', 201)
     alterar_status_pedido(42, 3)
+    alterar_status_pedido(53, 3)
     
 
 #LOGINS ----------------------------------------
@@ -267,7 +262,13 @@ def interface_carrinho(ID):
             while tipopagamento != 1 and tipopagamento != 2 and tipopagamento != 3 and tipopagamento != 4:
                 tipopagamento = int(input("\n Como será o pagamento? 1. Cartão\n 2. Boleto\n 3. Pix \n 4. Berries \n ---> Insira uma opção: "))
                 if tipopagamento == 1:
-                    pagamento = "Cartão"
+                    tipo2 = int(input("\n 1. Crédito\n 2. Débito \n ---> Insira uma opção: "))
+                    while tipo2 != 1 and tipo2 != 2:
+                        tipo2 = int(input("\n 1. Crédito\n 2. Débito \n ---> Insira uma opção: "))
+                    if tipo2 == 1:
+                        pagamento = "Crédito"
+                    else:
+                        pagamento = "Débito"
                 elif tipopagamento == 2:
                     pagamento = "Boleto"
                 elif tipopagamento == 3:
@@ -283,12 +284,12 @@ def interface_carrinho(ID):
             listar_carrinho(ID)
         elif carrinho_escolha != 4:
             print("\n ----- OPÇÃO INVÁLIDA, TENTE NOVAMENTE ------- \n")
-        carrinho_escolha = int(input("\n 1. Remover Item\n 2. Fechar Pedido\n 3. Ver Carrinho \n 4. Sair do Carrinho"))
+        carrinho_escolha = int(input("\n 1. Remover Item\n 2. Fechar Pedido\n 3. Ver Carrinho \n 4. Sair do Carrinho\n > "))
     print("\n --------- Saindo do Carrinho... ---------\n")
 
 #ITENS ----------------------------------------
 def listar_item(): 
-    pesquisar = f"SELECT item_nome, categoria, cor, preco, lugar_fabricacao FROM item;"
+    pesquisar = f"SELECT item_id, item_nome, categoria, cor, preco, lugar_fabricacao FROM item;"
     ponte.execute(pesquisar)
     pesquisa = ponte.fetchall()
     return(pesquisa)
@@ -369,7 +370,6 @@ def ID_cliente(chave):
     pesquisar = f"SELECT cliente_id FROM cliente WHERE (username == '{chave}');"
     ponte.execute(pesquisar)
     id_l = ponte.fetchone()
-    print(id_l[0])
     return(id_l[0])
 
 def exibir_um(chave):
@@ -485,7 +485,8 @@ def remover_item_carrinho(cliente_id, item_id):
     ponte.execute(qtd_maxima)
     qtd_maxima = ponte.fetchall()
     qtd_maxima = qtd_maxima[0][0]
-    while qtd_item <= 0 and qtd_item > qtd_maxima:
+    qtd_item = int(input("\nDigite a quantidade do item que deseja remover do carrinho\n-------> "))
+    while qtd_item < 0 and qtd_item > qtd_maxima:
         qtd_item = int(input("\nDigite a quantidade do item que deseja remover do carrinho\n-------> "))
     if ((qtd_item - qtd_maxima) == 0): # remover o item completamente
         remov_it = f"DELETE FROM CARRINHO WHERE clienteFK = {cliente_id} and item_idFK = {item_id};"
@@ -628,7 +629,7 @@ def listar_pedido_vendedor(vendedor_id):
 
 # Gerente
 def vendedor_gerente(gerente_id):
-    vendedores = f"SELECT vendedorFK FROM gerente WHERE funcFK = {gerente_id}"
+    vendedores = f"SELECT DISTINCT vendedorFK FROM gerente WHERE funcFK = {gerente_id}"
     ponte.execute(vendedores)
     vendedores = ponte.fetchall()
     if len(vendedores) <= 1: # pois terá só o id 0, mas o id 0 significa que não tem nenhum vendedor associado ao gerente
@@ -638,7 +639,7 @@ def vendedor_gerente(gerente_id):
     print("-------- Vendedores ----------")
     linha = 0
     for i in vendedores:
-        vendedores_info = f"""SELECT F.cod_func, F.nome, F.cpf FROM funcionario F, vendedor V 
+        vendedores_info = f"""SELECT DISTINCT F.cod_func, F.nome, F.cpf FROM funcionario F, vendedor V 
                             ON F.cod_func = V.funcFK WHERE (V.funcFK = {vendedores[linha][0]})"""
         ponte.execute(vendedores_info)
         vendedores_info = ponte.fetchall()
@@ -648,15 +649,15 @@ def vendedor_gerente(gerente_id):
     return 0
 
 def add_vendedor_supervisao(id_gerente, new_vendedor_id):
-    nome = input("  Insira o nome do cliente: ")
-    email = input("  Insira o email do cliente: ")
-    senha = input("  Insira a senha do cliente: ")
-    cpf = input("  Insira o cpf do cliente: ")
+    nome = input("  Insira o nome do vendedor: ")
+    email = input("  Insira o email do vendedor: ")
+    senha = input("  Insira a senha do vendedor: ")
+    cpf = input("  Insira o cpf do vendedor: ")
     dados = [new_vendedor_id, nome, email, senha, cpf]
     inserir_func = "INSERT INTO funcionario (cod_func, nome, email, senha, cpf) VALUES(?,?,?,?,?)"
     ponte.execute(inserir_func, dados)
     inserir_vend = "INSERT INTO vendedor (funcFK) VALUES(?)"
-    ponte.execute(inserir_vend, new_vendedor_id)
+    ponte.execute(inserir_vend, [new_vendedor_id])
     inserir_in_gerente = "INSERT INTO gerente (funcFK, vendedorFK) VALUES(?,?)"
     ponte.execute(inserir_in_gerente, [id_gerente, new_vendedor_id])
     conexao.commit()
@@ -679,13 +680,23 @@ def verHistorico(idchave):
 
 #RELATORIO MENSAL ---------------
 
-def relatorio(idchave):
-    
-    hist = f'''
-                CREATE VIEW RelatorioMensal AS
-                SELECT  vendedor.funcFK, vendedor.pedido_idFK,pedido.mes, pedido.qtd_itens, pedido.valor_total
-                FROM  vendedor FULL OUTER JOIN pedido ON pedido.pedido_id = vendedor.pedido_idFK WHERE pedido.mes = 11;
-'''
+def relatorio_mensal(mes):
+    hist = f'''CREATE TEMP VIEW RelatorioMensal AS
+        SELECT  vendedor.funcFK, vendedor.pedido_idFK,pedido.mes, pedido.qtd_itens, pedido.valor_total
+        FROM  vendedor INNER JOIN pedido ON pedido.pedido_id = vendedor.pedido_idFK;
+        '''
     ponte.execute(hist)
+    pesquisar = f"SELECT * FROM RelatorioMensal WHERE mes = {mes}"
+    ponte.execute(pesquisar)
     pesquisa = ponte.fetchall()
-    return(pesquisa)
+    if len(pesquisa) == 0:
+        print("\n Nenhuma Venda no mês selecionado")
+    else:
+        linha = 0
+        valor_total = 0
+        for i in pesquisa:
+                print(f"|| Código Funcionário: {pesquisa[linha][0]} || Código Pedido: {pesquisa[linha][1]} || Mês: {pesquisa[linha][2]} || Quantidade Itens: {pesquisa[linha][3]} || Valor Total: {pesquisa[linha][4]}")
+                valor_total += pesquisa[linha][4]
+                linha += 1
+        print(f"\nGanho Total: {valor_total}")
+        print(f"Número de Vendas: {linha}")

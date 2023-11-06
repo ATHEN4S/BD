@@ -1,6 +1,6 @@
 #from bdinit import create_table, inserir_cliente, alterar_cliente, pesquisar_nome, remover_cliente, listar_todos, exibir_um, conexao, login_cliente login_funcionario
 from bdinit import *
-create_table()
+#create_table()
 
 print("\n BOAS VINDAS A LOJA DE ROUPAS")
 
@@ -68,6 +68,9 @@ while (opcao != 4 and tipo != 4) or (login_realizado != True):
         
         elif tipo == 3:
             opcao = 0
+        
+        elif tipo == 4:
+            quit()
 
     elif(opcao == 2):
         #CADASTRO
@@ -173,11 +176,12 @@ if LOG == 1:
                 print(" -------- CARRINHO DE COMPRAS ------------")
                 listar_carrinho(ID)
                 ask = input("\nDigite se você deseja continuar (s/n):\n ----> ")
-                while ask != 's' and ask != 'n':
+                ask = ask.upper()
+                while ask != 'S' and ask != 'N':
                     ask = input("\nDigite se você deseja continuar (s/n):\n ----> ")
-                if ask == 'n':
+                    ask = ask.upper()
+                if ask == 'N':
                     break
-            continue
             
         elif (opcao == 3):
             print("\n HISTORICO DE PEDIDOS: \n")
@@ -208,16 +212,13 @@ if LOG == 1:
 
 #INTERFACE GERENTE
 if LOG == 3:
-    opcao = int(input("\n MENU - GERENTE \n 1. SETOR\n 2. ESTOQUE \n 3. VER VENDEDORES DO SETOR\n 4. RELATORIO MENSAL\n 5. ADICIONAR VENDEDOR\n 6. SAIR\n  Insira uma opção: "))
+    opcao = int(input("\n MENU - GERENTE \n 1. ESTOQUE \n 2. VER VENDEDORES DO SETOR\n 3. RELATORIO MENSAL\n 4. ADICIONAR VENDEDOR\n 5. SAIR\n   Insira uma opção: "))
     while True:
         if (opcao == 0):
-            opcao = int(input("\n MENU - GERENTE \n 1. SETOR\n 2. ESTOQUE \n 3. VER VENDEDORES DO SETOR\n 4. RELATORIO MENSAL\n 5. ADICIONAR VENDEDOR\n 6. SAIR\n   Insira uma opção: "))
+            opcao = int(input("\n MENU - GERENTE \n 1. ESTOQUE \n 2. VER VENDEDORES DO SETOR\n 3. RELATORIO MENSAL\n 4. ADICIONAR VENDEDOR\n 5. SAIR\n   Insira uma opção: "))
             continue
-        elif (opcao == 1):
-            print("\n SETOR\n")
             
-        elif (opcao == 2):
-            print("\n ESTOQUE\n")
+        elif (opcao == 1):
             estoqueop = 0
             estoqueop = int(input("\n ESTOQUE \n 1. VER ITENS\n 2. ADICIONAR ITEM\n 3. Voltar \n  >"))
             if estoqueop == 1:
@@ -243,17 +244,22 @@ if LOG == 3:
                 VALUES = [iid, ipreco, lugar, categoria, cor]
                 inserir_item(VALUES)
 
-            elif estoqueop == 3: # Relatorio Mensal
+            elif estoqueop == 3:
                 opcao = 0
                 continue
 
-        elif (opcao == 3): # 3. VENDEDORES DO SETOR
+        elif (opcao == 2): # 3. VENDEDORES DO SETOR
             vendedor_gerente(id_func)
 
-        elif (opcao == 4):
+        elif (opcao == 3): # Relatório Mensal
+            mes = input("\nDigite o número do mês que você quer ver o histórico (1 a 12)\n >>> ")
+            while int(mes) > 12 and int(mes) < 1:
+                print("\n ---- MÊS INVÁLIDO ----")
+                mes = input("\nDigite o número do mês que você quer ver o histórico (1 a 12)\n >>> ")
+            relatorio_mensal('mes')
             pass
 
-        elif (opcao == 5):
+        elif (opcao == 4):
             all_func_id = lista_id_funcionarios()
             while True:
                 new_vendedor_id=random.randrange(1, 10000)
@@ -261,7 +267,7 @@ if LOG == 3:
                     break
             add_vendedor_supervisao(id_func, new_vendedor_id)
 
-        elif (opcao == 6):
+        elif (opcao == 5):
             print("\n Bom trabalho. Até amanhã. \n")
             break
             

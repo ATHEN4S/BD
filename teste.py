@@ -16,9 +16,30 @@ with conexao:
         conexao.commit()
 
 #create_table()
+"""
+mes = '12'
+hist = f'''CREATE TEMP VIEW RelatorioMensal AS
+        SELECT  vendedor.funcFK, vendedor.pedido_idFK,pedido.mes, pedido.qtd_itens, pedido.valor_total
+        FROM  vendedor INNER JOIN pedido ON pedido.pedido_id = vendedor.pedido_idFK;
+        '''
+ponte.execute(hist)
+pesquisar = f"SELECT * FROM RelatorioMensal WHERE mes = {mes}"
+ponte.execute(pesquisar)
+pesquisa = ponte.fetchall()
+
+linha = 0
+valor_total = 0
+for i in pesquisa:
+        print(f"|| Código Funcionário: {pesquisa[linha][0]} || Código Pedido: {pesquisa[linha][1]} || Mês: {pesquisa[linha][2]} || Quantidade Itens: {pesquisa[linha][3]} || Valor Total: {pesquisa[linha][4]}")
+        valor_total += pesquisa[linha][4]
+        linha += 1
+print(f"\nGanho Total: {valor_total}")
+print(f"Número de Vendas: {linha}")
+
+
 
 #vendedor_gerente(2)
-"""
+
 inserir = "INSERT INTO carrinho(qtd_item, item_idFK, clienteFK) VALUES(?,?,?)"
 ponte.execute(inserir, [2, 1479, 1])
 conexao.commit()
@@ -49,4 +70,10 @@ pesquisar = "SELECT qtd_estoque FROM view_name"
 ponte.execute(pesquisar)
 pesquisa = ponte.fetchall()
 print(pesquisa)
+
+CREATE VIEW RelatorioMensal AS
+SELECT  vendedor.funcFK, vendedor.pedido_idFK,pedido.mes, pedido.qtd_itens, pedido.valor_total
+FROM  vendedor FULL OUTER JOIN pedido ON pedido.pedido_id = vendedor.pedido_idFK WHERE pedido.mes = 11;
+
+
 """
