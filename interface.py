@@ -1,6 +1,6 @@
 #from bdinit import create_table, inserir_cliente, alterar_cliente, pesquisar_nome, remover_cliente, listar_todos, exibir_um, conexao, login_cliente login_funcionario
 from bdinit import *
-#create_table()
+create_table()
 
 print("\n BOAS VINDAS A LOJA DE ROUPAS")
 
@@ -133,7 +133,7 @@ if LOG == 1:
 
             #Visualizar Endereço - se não tiver, opção de adicionar um.
             if checar_endereco(ID) == False:
-                ck = input("Você ainda não adicionou endereço de entrega. Deseja adicionar?\n >")
+                ck = input("Você ainda não adicionou endereço de entrega. Deseja adicionar? (s/n)\n >")
                 if (ck == "s") or (ck == "S"):
                     adicionar_endereco(ID)
             else:
@@ -152,14 +152,14 @@ if LOG == 1:
                 for item in lista:
                     print(item)
 
-                filtrar_itens = input("Deseja filtrar os itens disponíveis? (S/N) > ")
-                if filtrar_itens.upper() == 'S':
+                filtrar_itens1 = input("Deseja filtrar os itens disponíveis? (S/N) > ")
+                if filtrar_itens1.upper() == 'S':
                     filtrar_itens()
                 try:
                     add_aocarrinho = int(input("\n Digite o ID(INTEIRO) do item que deseja adicionar ao carrinho: \n -----> "))
                 except ValueError:
                     print("\n -----------ERRO: NÃO FOI DIGITADO UM NÚMERO INTEIRO----------\n ")
-                is_item = check_info('item_id', add_aocarrinho, 'item_id', item)
+                is_item = check_info('item_id', add_aocarrinho, 'item_id', 'item')
                 if is_item != False:
                     qtd_item = 0
                     no_estoque = estoque_item_especifico(is_item) # Quantidade desse item específico no estoque
@@ -181,13 +181,17 @@ if LOG == 1:
             
         elif (opcao == 3):
             print("\n HISTORICO DE PEDIDOS: \n")
-            
-            
-            continue
+            itens = "ID do pedido | Quantidade de itens | Valor total "
+            historico = verHistorico(ID)
+            print(itens)
+            for a in historico:
+                print(a)
+            input("\nDigite qualquer caractere para voltar:\n ----> ")
+            opcao = 0
         
         elif (opcao == 4):
             interface_carrinho(ID)
-
+            opcao = 0
             continue
 
         elif (opcao == 5):
@@ -195,7 +199,8 @@ if LOG == 1:
             break
             
         elif (opcao < 0) or (opcao > 5):
-            print("\nEssa opcao não existe, selecione outra\n")
+            print("Essa opcao não existe, selecione outra\n")
+            opcao = int(input("  > "))
             continue
 
         opcao = 0
@@ -303,66 +308,3 @@ if LOG == 2:
 
 exit
 
-
-"""
-    elif (opcao == 2):
-        print("\n ALTERAR CLIENTE \n")
-        chave = input("Insira o usuario do cliente: ")
-        coluna = input("Insira qual informação quer mudar do cliente (nome, email...): ")
-        novo = input("Insira a nova informação do cliente: ")
-        
-        alterar_cliente(coluna, novo, chave)
-
-        print("Cliente atualizado com Sucesso")
-        opcao = 0
-
-    elif (opcao == 3):
-        print("\n PESQUISAR POR NOME \n")
-        name = input("Insira o nome do cliente: ")
-        retorno = pesquisar_nome(name)
-        if len(retorno) == 0:
-            print("Esse cliente não existe. Cheque a gramática ou insira um cliente novo.")
-
-        opcao = 0
-
-    
-    elif (opcao == 4):
-        print("\n REMOVER CLIENTE \n")
-        chave = input("Insira o usuario do cliente: ")
-        
-        retorno = exibir_um(chave)
-        if len(retorno) > 0:
-            remover_cliente(chave)
-            print("Cliente apagado com Sucesso")
-        else:
-            print("Esse cliente não existe. Cheque a gramática.")
-
-        opcao = 0
-    
-    elif (opcao == 5):
-        print("\n LISTAR TODOS \n")
-        
-        lista = listar_todos()
-        for pessoa in lista:
-            print(pessoa)
-
-        opcao = 0
-    
-    elif (opcao == 6):
-        print("\n EXIBIR UM \n")
-        chave = input("Insira o usuario do cliente: ")
-        retorno = exibir_um(chave)
-        if len(retorno) == 0:
-            print("Esse cliente não existe. Cheque a gramática ou insira um cliente novo.")
-
-        opcao = 0
-
-    elif (opcao == 7):
-        print("Obrigada por usar nosso sistema\n\n")
-        conexao.close()
-        break
-    if (opcao < 0) or (opcao > 7):
-        print("Essa opcao não existe, selecione outra")
-        opcao = 0
-        continue
-"""

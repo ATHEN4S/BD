@@ -184,6 +184,15 @@ INSERT OR IGNORE INTO gerente(funcFK, vendedorFK)
 VALUES(1, 3),
 (1, 4),
 (1, 5);
+
+
+
+CREATE VIEW RelatorioMensal AS
+SELECT  vendedor.funcFK, vendedor.pedido_idFK,pedido.mes, pedido.qtd_itens, pedido.valor_total
+FROM  vendedor FULL OUTER JOIN pedido ON pedido.pedido_id = vendedor.pedido_idFK WHERE pedido.mes = 11;
+
+
+
 """
 # Falta criar os itens
     #ponte.execute(create)
@@ -278,8 +287,8 @@ def interface_carrinho(ID):
     print("\n --------- Saindo do Carrinho... ---------\n")
 
 #ITENS ----------------------------------------
-def listar_item():
-    pesquisar = f"SELECT item_nome, categoria, cor, preco FROM item;"
+def listar_item(): 
+    pesquisar = f"SELECT item_nome, categoria, cor, preco, lugar_fabricacao FROM item;"
     ponte.execute(pesquisar)
     pesquisa = ponte.fetchall()
     return(pesquisa)
@@ -651,3 +660,32 @@ def add_vendedor_supervisao(id_gerente, new_vendedor_id):
     inserir_in_gerente = "INSERT INTO gerente (funcFK, vendedorFK) VALUES(?,?)"
     ponte.execute(inserir_in_gerente, [id_gerente, new_vendedor_id])
     conexao.commit()
+
+
+#HISTORICO ------------- historico de pedidos
+'''
+CREATE VIEW ProfessorDisc AS
+SELECT  P.Nome, D.nome as disciplina, M.periodo
+   FROM  Professor P INNER JOIN Ministra M ON P.siape = M.siape INNER JOIN Disciplina D ON M.cod_disciplina = D.cod_disciplina INNER JOIN 	Departamento De on DE.numero_depto = P.cod_depto WHERE DE.nome_depto = 'Magia’;
+'''
+
+def verHistorico(idchave):
+    hist = f'''SELECT  pedido.pedido_id as nome, pedido.qtd_itens as itens, pedido.valor_total as vt
+                FROM  pedido FULL JOIN cliente ON pedido.clienteFK = cliente.cliente_id WHERE cliente.cliente_id = {idchave};
+'''
+    ponte.execute(hist)
+    pesquisa = ponte.fetchall()
+    return(pesquisa)
+
+#RELATORIO MENSAL ---------------
+
+def relatorio(idchave):
+    
+    hist = f'''
+                CREATE VIEW RelatorioMensal AS
+                SELECT  vendedor.funcFK, vendedor.pedido_idFK,pedido.mes, pedido.qtd_itens, pedido.valor_total
+                FROM  vendedor FULL OUTER JOIN pedido ON pedido.pedido_id = vendedor.pedido_idFK WHERE pedido.mes = 11;
+'''
+    ponte.execute(hist)
+    pesquisa = ponte.fetchall()
+    return(pesquisa)
