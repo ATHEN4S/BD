@@ -97,22 +97,11 @@ while (opcao != 4 and tipo != 4) or (login_realizado != True):
             cont += 1
             print(cont,". ",item)
         
-        filtrar_item = input("Deseja filtrar os itens disponíveis? (S/N) > ")
-        if filtrar_item.upper() == 'S':
+        filtrar_item_input = input("Deseja filtrar os itens disponíveis? (S/N) > ")
+        if filtrar_item_input.upper() == 'S':
             filtrar_itens()
-                
         else:
-            input("Digite qualquer coisa para prosseguir.\n >")
             opcao = 0
-            continue
-
-        cont = 0
-        print("\nITENS NO CATÁLOGO\n")
-        lista = listar_item()
-        
-        for item in lista:
-            cont += 1
-            print(cont,". ",item)
     
     elif (opcao == 4):
         print("\n Volte Sempre !\n\n")

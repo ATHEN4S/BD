@@ -1,7 +1,7 @@
 import random
 import sqlite3
 from datetime import datetime
-from func_filters import *
+from func_filters import nome, categoria, cor, faixa_preco, local_fabricacao, obter_faixa_preco
 
 conexao = sqlite3.connect("clientes.db")
 ponte = conexao.cursor()
@@ -500,66 +500,35 @@ def listar_carrinho(cliente_id):
 
 
 #FILTRO ----------------------------
-
-def nome(lista):
-  item_nome = input("\nDigite o nome: ").lower()
-  return [dado for dado in lista if item_nome in dado[0].lower()]
-
-def categoria(lista):
-    item_categoria = input("\nDigite a categoria: ").lower()
-    return [dado for dado in lista if item_categoria in dado[1].lower()]
-        
-def cor(lista):
-    item_cor = input("\nDigite a cor desejada: ").lower()
-    return [dado for dado in lista if item_cor in dado[2].lower()]
-        
-def faixa_preco(lista, x, y):
-    while True:
-        item_faixa_preco = input("\nDigite a faixa de preço(ex.: 1, 10): ").replace(" ", "")
-        parts = item_faixa_preco.split(',')
-        if len(parts) != 2 or not all(part.isdigit() for part in parts):
-            print("A string de entrada deve ter dois números separados por vírgula.")
-            continue
-        x, y = map(int, parts)
-        if x >= y:
-            print("O primeiro número deve ser menor que o segundo.")
-            continue
-            return x, y
-        return [dado for dado in lista if x <= dado[3] <= y]
-        
-def local_fabricacao(lista):
-    item_local_fabricacao = input("\nDigite o local de fabricação: ").lower()
-    return [dado for dado in lista if item_local_fabricacao in dado[4].lower()]
-
 def filtrar_itens():
     while True:
         lista = listar_item()
-        resultados = []
+        resultados =[]
+    
+        escolha_filtro = int(input("\n 1.NOME\n 2.CATEGORIA\n 3.COR\n 4.FAIXA DE PREÇO\n 5.LOCAL DE FABRICAÇÃO\n 6. SAIR DOS FILTROS\n Escolha um filtro:\n > "))
 
-        escolha_filtro = int(input("\n 1.NOME\n 2.CATEGORIA\n 3.COR\n 4.FAIXA DE PREÇO\n 5.LOCAL DE FABRICAÇÃO\n 6. SAIR DOS FILTROS\n Escolha um filtro:\n > "))     
+        if (escolha_filtro == 1):
+            resultados = nome(lista)
+        elif (escolha_filtro == 2):
+            resultados = categoria(lista)
+        elif (escolha_filtro == 3):
+            resultados = cor(lista)
+        elif (escolha_filtro == 4):
+            x, y = obter_faixa_preco()
+            resultados = faixa_preco(lista, x, y)
+        elif (escolha_filtro == 5):
+            resultados = local_fabricacao(lista)
+        elif (escolha_filtro == 6):
+            break
+        elif (escolha_filtro < 1) or (escolha_filtro > 6):
+            print("\nEssa opcao não existe, selecione outra.\n")
+            continue 
         
         if resultados:
             for resultado in resultados:
                 print(resultado)
-            return resultados
         else:
             print("\nNão temos esse item no estoque.")
-            
-        if escolha_filtro == 1:
-            resultados = nome(lista)
-        elif escolha_filtro == 2:
-            resultados = categoria(lista)
-        elif escolha_filtro == 3:
-            resultados = cor(lista)
-        elif escolha_filtro == 4:
-            resultados = faixa_preco(lista, x, y)
-        elif escolha_filtro == 5:
-            resultados = local_fabricacao(lista)
-        elif escolha_filtro == 6:
-            pass
-        else:
-            print("Essa opção não existe, selecione outra.\n")
-        break 
 
 #da interface vendedor--------------------
 

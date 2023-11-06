@@ -10,7 +10,7 @@ def cor(lista):
     item_cor = input("\nDigite a cor desejada: ").lower()
     return [dado for dado in lista if item_cor in dado[2].lower()]
         
-def faixa_preco(lista, x, y):
+def obter_faixa_preco():
     while True:
         item_faixa_preco = input("\nDigite a faixa de preço(ex.: 1, 10): ").replace(" ", "")
         parts = item_faixa_preco.split(',')
@@ -22,7 +22,9 @@ def faixa_preco(lista, x, y):
             print("O primeiro número deve ser menor que o segundo.")
             continue
         return x, y
-        return [dado for dado in lista if x <= dado[3] <= y]
+    
+def faixa_preco(lista, x, y):
+    return [dado for dado in lista if x <= dado[3] <= y]
         
 def local_fabricacao(lista):
     item_local_fabricacao = input("\nDigite o local de fabricação: ").lower()
